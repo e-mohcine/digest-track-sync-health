@@ -10,6 +10,7 @@ import { TypeSelector } from '@/components/entry/TypeSelector';
 import { QuantitySelector } from '@/components/entry/QuantitySelector';
 import { NotesSection } from '@/components/entry/NotesSection';
 import { useEntryData } from '@/hooks/useEntryData';
+import { saveEntry } from '@/services/storageService';
 
 const AddEntry = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const AddEntry = () => {
     handleQuantitySelect, 
     handleNotesChange, 
     handleAddPhoto,
+    resetEntryData,
     isValid 
   } = useEntryData();
 
@@ -30,12 +32,25 @@ const AddEntry = () => {
       return;
     }
 
-    console.log("Saving entry:", entryData);
+    // Generate a unique ID for this entry
+    const entryWithId = {
+      ...entryData,
+      id: `entry_${Date.now()}`
+    };
+    
+    // Save the entry to localStorage
+    saveEntry(entryWithId);
+    
+    console.log("Saving entry:", entryWithId);
     
     toast.success("Entrée enregistrée", {
       description: "Votre entrée a été enregistrée avec succès",
     });
     
+    // Reset the form
+    resetEntryData();
+    
+    // Navigate back to the home page after a brief delay
     setTimeout(() => navigate('/'), 1000);
   };
 

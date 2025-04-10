@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { 
@@ -20,43 +20,24 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BristolType } from '@/components/stool/BristolType';
-
-// Mock data for stool entries
-const generateMockEntries = () => {
-  const today = new Date();
-  const entries = [];
-  for (let i = 0; i < 30; i++) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const entriesCount = Math.floor(Math.random() * 3) + 1;
-    
-    for (let j = 0; j < entriesCount; j++) {
-      const hours = Math.floor(Math.random() * 12) + 7; // Between 7am and 7pm
-      const minutes = Math.floor(Math.random() * 60);
-      date.setHours(hours, minutes);
-      
-      entries.push({
-        id: `${i}-${j}`,
-        date: new Date(date),
-        type: Math.floor(Math.random() * 7) + 1,
-        quantity: ['small', 'normal', 'large'][Math.floor(Math.random() * 3)],
-        notes: Math.random() > 0.7 ? 'Some notes about this entry...' : '',
-      });
-    }
-  }
-  return entries.sort((a, b) => b.date.getTime() - a.date.getTime());
-};
-
-const mockEntries = generateMockEntries();
+import { getEntries, getEntriesByDate } from '@/services/storageService';
+import { EntryData } from '@/hooks/useEntryData';
 
 const History = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [view, setView] = useState<'calendar' | 'list'>('calendar');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [entries, setEntries] = useState<EntryData[]>([]);
+  
+  // Load entries from localStorage when component mounts
+  useEffect(() => {
+    const storedEntries = getEntries();
+    setEntries(storedEntries);
+  }, []);
 
-  const entriesForSelectedDate = mockEntries.filter(entry => 
-    selectedDate && isSameDay(entry.date, selectedDate)
-  );
+  const entriesForSelectedDate = selectedDate 
+    ? entries.filter(entry => isSameDay(entry.time, selectedDate))
+    : [];
 
   const handleMonthChange = (increment: number) => {
     const newDate = new Date(date);
@@ -71,7 +52,7 @@ const History = () => {
 
   // Get number of entries per day for the calendar view
   const entriesByDay = days.map(day => {
-    const dayEntries = mockEntries.filter(entry => isSameDay(entry.date, day));
+    const dayEntries = entries.filter(entry => isSameDay(entry.time, day));
     return {
       date: day,
       entries: dayEntries,
@@ -79,14 +60,20 @@ const History = () => {
     };
   });
 
-  const groupedEntries: { [date: string]: typeof mockEntries } = {};
-  mockEntries.forEach(entry => {
-    const dateKey = format(entry.date, 'yyyy-MM-dd');
+  // Group entries by date for the list view
+  const groupedEntries: { [date: string]: EntryData[] } = {};
+  entries.forEach(entry => {
+    const dateKey = format(entry.time, 'yyyy-MM-dd');
     if (!groupedEntries[dateKey]) {
       groupedEntries[dateKey] = [];
     }
     groupedEntries[dateKey].push(entry);
   });
+
+  // Sort dates in descending order (most recent first)
+  const sortedDateKeys = Object.keys(groupedEntries).sort((a, b) => 
+    new Date(b).getTime() - new Date(a).getTime()
+  );
 
   return (
     <div className="space-y-6 pb-20 animate-fade-in">
@@ -207,7 +194,7 @@ const History = () => {
                       <div>
                         <div className="font-medium">Type {entry.type}</div>
                         <div className="text-sm text-muted-foreground">
-                          {format(entry.date, 'HH:mm')}
+                          {format(entry.time, 'HH:mm')}
                         </div>
                       </div>
                     </div>
@@ -225,45 +212,51 @@ const History = () => {
 
       {view === 'list' && (
         <div className="space-y-4">
-          {Object.entries(groupedEntries).map(([dateKey, entries]) => (
-            <div key={dateKey}>
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                {format(new Date(dateKey), 'EEEE dd MMMM yyyy', { locale: fr })}
-              </h3>
-              <div className="space-y-2">
-                {entries.map(entry => (
-                  <Card key={entry.id} className="p-3 hover:bg-muted/50 cursor-pointer">
-                    <div className="flex items-center">
-                      <div className={`bristol-type-${entry.type} w-10 h-10 rounded-full flex items-center justify-center mr-3`}>
-                        <span className="font-semibold">{entry.type}</span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between">
-                          <span className="font-medium">Type {entry.type}</span>
-                          <span className="text-sm text-muted-foreground">
-                            {format(entry.date, 'HH:mm')}
-                          </span>
+          {entries.length === 0 ? (
+            <Card className="p-6 text-center">
+              <p className="text-muted-foreground">Aucune entrée à afficher</p>
+            </Card>
+          ) : (
+            sortedDateKeys.map((dateKey) => (
+              <div key={dateKey}>
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                  {format(new Date(dateKey), 'EEEE dd MMMM yyyy', { locale: fr })}
+                </h3>
+                <div className="space-y-2">
+                  {groupedEntries[dateKey].map(entry => (
+                    <Card key={entry.id} className="p-3 hover:bg-muted/50 cursor-pointer">
+                      <div className="flex items-center">
+                        <div className={`bristol-type-${entry.type} w-10 h-10 rounded-full flex items-center justify-center mr-3`}>
+                          <span className="font-semibold">{entry.type}</span>
                         </div>
-                        <div className="flex items-center mt-1">
-                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs mr-2 ${
-                            entry.quantity === 'small' ? 'bg-intestitrack-blue-light text-intestitrack-blue' :
-                            entry.quantity === 'normal' ? 'bg-intestitrack-green-light text-intestitrack-green' :
-                            'bg-intestitrack-alert-light text-intestitrack-alert'
-                          }`}>
-                            {entry.quantity === 'small' ? 'Faible' : 
-                            entry.quantity === 'normal' ? 'Normale' : 'Abondante'}
-                          </span>
-                          {entry.notes && (
-                            <span className="text-xs text-muted-foreground">Avec notes</span>
-                          )}
+                        <div className="flex-1">
+                          <div className="flex justify-between">
+                            <span className="font-medium">Type {entry.type}</span>
+                            <span className="text-sm text-muted-foreground">
+                              {format(new Date(entry.time), 'HH:mm')}
+                            </span>
+                          </div>
+                          <div className="flex items-center mt-1">
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs mr-2 ${
+                              entry.quantity === 'small' ? 'bg-intestitrack-blue-light text-intestitrack-blue' :
+                              entry.quantity === 'normal' ? 'bg-intestitrack-green-light text-intestitrack-green' :
+                              'bg-intestitrack-alert-light text-intestitrack-alert'
+                            }`}>
+                              {entry.quantity === 'small' ? 'Faible' : 
+                              entry.quantity === 'normal' ? 'Normale' : 'Abondante'}
+                            </span>
+                            {entry.notes && (
+                              <span className="text-xs text-muted-foreground">Avec notes</span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
     </div>

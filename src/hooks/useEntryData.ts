@@ -2,6 +2,7 @@
 import { useState } from 'react';
 
 export interface EntryData {
+  id?: string;
   type: number | null;
   quantity: string | null;
   notes: string;
@@ -34,6 +35,16 @@ export const useEntryData = () => {
     setEntryData(prev => ({ ...prev, hasPhoto: true }));
   };
 
+  const resetEntryData = () => {
+    setEntryData({
+      type: null,
+      quantity: null,
+      notes: '',
+      time: new Date(),
+      hasPhoto: false
+    });
+  };
+
   const isValid = entryData.type !== null && entryData.quantity !== null;
 
   return {
@@ -42,6 +53,7 @@ export const useEntryData = () => {
     handleQuantitySelect,
     handleNotesChange,
     handleAddPhoto,
+    resetEntryData,
     isValid
   };
 };
