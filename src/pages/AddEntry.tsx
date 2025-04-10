@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, FileText, Clock, Check, PlusCircle } from 'lucide-react';
@@ -55,16 +56,15 @@ const AddEntry = () => {
 
   const handleSubmit = () => {
     if (!entryData.type || !entryData.quantity) {
-      toast("Information manquante", {
+      toast.error("Information manquante", {
         description: "Veuillez remplir les champs obligatoires",
-        variant: "destructive"
       });
       return;
     }
 
     console.log("Saving entry:", entryData);
     
-    toast("Entrée enregistrée", {
+    toast.success("Entrée enregistrée", {
       description: "Votre entrée a été enregistrée avec succès",
     });
     
