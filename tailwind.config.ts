@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,15 +53,26 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+				// IntestiTrack custom colors
+				intestitrack: {
+					blue: '#4A9DD6',
+					'blue-light': '#B7DFFA',
+					green: '#5BBE88',
+					'green-light': '#CEEEDE',
+					beige: '#F5EFE0',
+					'beige-dark': '#E5D9B6',
+					alert: '#F59E6A',
+					'alert-light': '#FFECCF',
+				},
+				// Bristol scale type colors
+				bristol: {
+					type1: '#8B4513',
+					type2: '#A0522D',
+					type3: '#B87333',
+					type4: '#CD853F',
+					type5: '#DAA520',
+					type6: '#E6C27F',
+					type7: '#F5DEB3',
 				}
 			},
 			borderRadius: {
@@ -84,11 +96,28 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': { opacity: '0' },
+					'100%': { opacity: '1' }
+				},
+				'bounce-small': {
+					'0%, 100%': {
+						transform: 'translateY(0)',
+					},
+					'50%': {
+						transform: 'translateY(-3px)',
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out',
+				'bounce-small': 'bounce-small 1s ease-in-out infinite',
+			},
+			fontFamily: {
+				'sans': ['Roboto', 'Open Sans', 'sans-serif'],
 			}
 		}
 	},
