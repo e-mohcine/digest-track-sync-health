@@ -7,6 +7,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
@@ -28,6 +29,14 @@ export function NavBar() {
               <DropdownMenuItem asChild>
                 <Link to="/settings">Paramètres</Link>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/faq">FAQ</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/rgpd">Politique de confidentialité</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link to="/help">Aide</Link>
               </DropdownMenuItem>
@@ -48,7 +57,7 @@ export function NavBar() {
             </Link>
           </Button>
           <Button variant="ghost" size="icon" asChild>
-            <Link to="/settings">
+            <Link to="/profile">
               <Settings className="h-5 w-5" />
             </Link>
           </Button>
