@@ -28,7 +28,7 @@ const WeeklyChart = () => {
           <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
           <Tooltip 
             formatter={(value, name) => {
-              const typeNumber = name.replace('type', '');
+              const typeNumber = name.toString().substring(4);
               return [`Type ${typeNumber}: ${value}`, 'Selles'];
             }}
           />

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, FileText, Clock, Check, PlusCircle } from 'lucide-react';
@@ -15,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 interface EntryData {
   type: number | null;
@@ -48,7 +47,6 @@ const AddEntry = () => {
   };
 
   const handleAddPhoto = () => {
-    // In a real app, this would trigger the camera or file picker
     setEntryData(prev => ({ ...prev, hasPhoto: true }));
     toast("Photo ajoutée", {
       description: "La photo a été ajoutée à votre entrée",
@@ -64,14 +62,12 @@ const AddEntry = () => {
       return;
     }
 
-    // Here you would save the data to your backend
     console.log("Saving entry:", entryData);
     
     toast("Entrée enregistrée", {
       description: "Votre entrée a été enregistrée avec succès",
     });
     
-    // Navigate back to home
     setTimeout(() => navigate('/'), 1000);
   };
 
@@ -175,7 +171,6 @@ const AddEntry = () => {
                           </DialogDescription>
                         </DialogHeader>
                         <div className="py-4">
-                          {/* Time picker would go here */}
                           <p className="text-center text-muted-foreground">
                             Fonctionnalité à implementer
                           </p>
@@ -187,7 +182,6 @@ const AddEntry = () => {
               </CardContent>
             </Card>
             
-            {/* Symptoms section would go here */}
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" className="w-full">
@@ -203,7 +197,6 @@ const AddEntry = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="py-4">
-                  {/* Symptoms selection would go here */}
                   <p className="text-center text-muted-foreground">
                     Fonctionnalité à implementer
                   </p>
