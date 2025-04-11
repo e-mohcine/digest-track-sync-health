@@ -227,14 +227,13 @@ export const subscribeToRealTimeUpdates = (
 ) => {
   const channel = supabase
     .channel('schema-db-changes')
-    .on(
-      'postgres_changes',
+    .on('postgres_changes', 
       {
         event: event,
         schema: 'public',
         table: table
       },
-      (payload) => callback(payload)
+      callback
     )
     .subscribe();
 
