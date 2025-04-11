@@ -121,7 +121,7 @@ export const useCompleteEntryData = () => {
       if (entryData.stoolType !== null && entryData.stoolQuantity !== null) {
         const stoolEntry = await createStoolEntry({
           bristol_type: entryData.stoolType,
-          quantity: entryData.stoolQuantity as 'small' | 'normal' | 'large',
+          quantity: entryData.stoolQuantity, // Pas besoin de cast, accepte maintenant un string générique
           notes: entryData.notes,
           has_photo: entryData.hasPhoto,
           has_blood: entryData.hasBlood,

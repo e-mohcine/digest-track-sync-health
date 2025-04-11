@@ -16,7 +16,7 @@ export type StoolEntry = {
   id: string;
   user_id: string;
   bristol_type: number;
-  quantity: 'small' | 'normal' | 'large';
+  quantity: string; // Modifié pour accepter toute chaîne de caractères
   notes: string | null;
   has_photo: boolean;
   has_blood: boolean;
@@ -29,7 +29,7 @@ export type StoolEntry = {
 export type SymptomType = {
   id: number;
   name: string;
-  category: 'digestive' | 'articular' | 'dermatological' | 'general' | 'other';
+  category: string; // Modifié pour accepter toute chaîne de caractères
   description: string | null;
   icon: string | null;
   created_at: string;
@@ -95,7 +95,7 @@ export type FoodEntry = {
   food_name: string;
   category_id: number | null;
   quantity: string | null;
-  meal_type: 'breakfast' | 'lunch' | 'dinner' | 'snack' | null;
+  meal_type: string | null; // Modifié pour accepter toute chaîne de caractères
   has_photo: boolean;
   notes: string | null;
   consumed_at: string;
@@ -108,7 +108,7 @@ export type Badge = {
   name: string;
   description: string;
   icon: string;
-  category: 'tracking' | 'consistency' | 'improvement' | 'achievement' | null;
+  category: string | null; // Modifié pour accepter toute chaîne de caractères
   difficulty: number | null;
   created_at: string;
 };

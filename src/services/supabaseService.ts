@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { 
   StoolEntry, 
@@ -73,7 +72,7 @@ export const fetchStoolEntries = async (): Promise<StoolEntry[]> => {
       
     if (error) throw error;
     
-    return data || [];
+    return (data || []) as StoolEntry[];
   } catch (error: any) {
     console.error('Erreur lors de la récupération des entrées de selles:', error.message);
     return [];
@@ -101,7 +100,7 @@ export const createStoolEntry = async (entry: Omit<StoolEntry, 'id' | 'user_id' 
     if (error) throw error;
     
     toast.success('Entrée enregistrée avec succès');
-    return data;
+    return data as StoolEntry;
   } catch (error: any) {
     toast.error('Erreur lors de l\'enregistrement de l\'entrée', {
       description: error.message
@@ -120,7 +119,7 @@ export const fetchSymptomTypes = async (): Promise<SymptomType[]> => {
       
     if (error) throw error;
     
-    return data || [];
+    return (data || []) as SymptomType[];
   } catch (error: any) {
     console.error('Erreur lors de la récupération des types de symptômes:', error.message);
     return [];
