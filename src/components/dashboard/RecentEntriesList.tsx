@@ -4,16 +4,25 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { StoolEntry } from '@/types/database.types';
+import { Droplet, AlertTriangle } from 'lucide-react';
 
-const RecentEntriesList = () => {
-  // Placeholder data
-  const entries = [
-    { id: 1, date: new Date(2025, 3, 10, 10, 30), type: 4, quantity: 'normal', hasNotes: true },
-    { id: 2, date: new Date(2025, 3, 10, 8, 0), type: 5, quantity: 'small', hasNotes: false },
-    { id: 3, date: new Date(2025, 3, 9, 19, 45), type: 6, quantity: 'large', hasNotes: true },
-    { id: 4, date: new Date(2025, 3, 9, 14, 15), type: 3, quantity: 'normal', hasNotes: false },
-  ];
+interface RecentEntriesListProps {
+  entries: StoolEntry[];
+}
 
+const RecentEntriesList: React.FC<RecentEntriesListProps> = ({ entries }) => {
+  if (entries.length === 0) {
+    return (
+      <div className="text-center py-8 bg-muted/20 rounded-lg">
+        <p className="text-muted-foreground">Aucune entrée récente</p>
+        <p className="text-sm text-muted-foreground mt-2">
+          Ajoutez votre première entrée en utilisant le bouton +
+        </p>
+      </div>
+    );
+  }
+  
   return (
     <div className="space-y-3">
       {entries.map(entry => (
@@ -22,15 +31,15 @@ const RecentEntriesList = () => {
             <div className="flex items-center">
               <div className={cn(
                 "w-10 h-10 rounded-full flex items-center justify-center mr-3",
-                `bristol-type-${entry.type}`
+                `bristol-type-${entry.bristol_type}`
               )}>
-                <span className="font-semibold">{entry.type}</span>
+                <span className="font-semibold">{entry.bristol_type}</span>
               </div>
               <div className="flex-1">
                 <div className="flex justify-between">
-                  <p className="font-medium">Type {entry.type}</p>
+                  <p className="font-medium">Type {entry.bristol_type}</p>
                   <p className="text-sm text-muted-foreground">
-                    {formatDistanceToNow(entry.date, { addSuffix: true, locale: fr })}
+                    {formatDistanceToNow(new Date(entry.occurred_at), { addSuffix: true, locale: fr })}
                   </p>
                 </div>
                 <div className="flex items-center mt-0.5">
@@ -43,8 +52,25 @@ const RecentEntriesList = () => {
                     {entry.quantity === 'small' ? 'Faible' : 
                      entry.quantity === 'normal' ? 'Normale' : 'Abondante'}
                   </span>
-                  {entry.hasNotes && (
-                    <span className="text-xs text-muted-foreground">Avec notes</span>
+                  
+                  {(entry.has_blood || entry.has_mucus || entry.notes) && (
+                    <div className="flex gap-1 text-xs text-muted-foreground">
+                      {entry.has_blood && (
+                        <span className="flex items-center text-red-500">
+                          <Droplet className="h-3 w-3 mr-0.5" />
+                          Sang
+                        </span>
+                      )}
+                      
+                      {entry.has_mucus && (
+                        <span className="flex items-center text-amber-500">
+                          <AlertTriangle className="h-3 w-3 mr-0.5" />
+                          Mucus
+                        </span>
+                      )}
+                      
+                      {entry.notes && <span>Notes</span>}
+                    </div>
                   )}
                 </div>
               </div>

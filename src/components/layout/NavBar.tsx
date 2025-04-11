@@ -1,68 +1,133 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, Bell, Settings } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { LogOut, Menu, User } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { signOut } from '@/services/supabaseService';
+import { useAuth } from '@/hooks/useAuth';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-export function NavBar() {
+export const NavBar = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  const handleSignOut = async () => {
+    const success = await signOut();
+    if (success) {
+      navigate('/auth');
+    }
+  };
+  
   return (
-    <header className="sticky top-0 z-10 bg-white border-b shadow-sm">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center">
+    <div className="border-b sticky top-0 bg-background z-10">
+      <div className="flex h-16 items-center px-4 justify-between">
+        <Link to="/" className="flex items-center">
+          <img 
+            src="/logo-placeholder.svg" 
+            alt="IntestiTrack Logo" 
+            className="h-8 w-8 mr-2"
+          />
+          <span className="font-semibold text-lg">IntestiTrack</span>
+        </Link>
+        
+        <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full"
+              >
+                <User className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem asChild>
-                <Link to="/profile">Mon profil</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/settings">Paramètres</Link>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {user?.user_metadata?.first_name} {user?.user_metadata?.last_name}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user?.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => navigate('/profile')}>
+                <User className="mr-2 h-4 w-4" />
+                <span>Profil</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/faq">FAQ</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/rgpd">Politique de confidentialité</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/help">Aide</Link>
+              <DropdownMenuItem onSelect={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Se déconnecter</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Link to="/" className="ml-2 flex items-center">
-            <img src="/logo-placeholder.svg" alt="IntestiTrack Logo" className="h-8 w-8 mr-2" />
-            <h1 className="text-xl font-semibold bg-gradient-to-r from-intestitrack-blue to-intestitrack-green bg-clip-text text-transparent">
-              IntestiTrack
-            </h1>
-          </Link>
-        </div>
-        
-        <div className="flex items-center space-x-1">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/notifications">
-              <Bell className="h-5 w-5" />
-            </Link>
-          </Button>
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/profile">
-              <Settings className="h-5 w-5" />
-            </Link>
-          </Button>
+          
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button size="icon" variant="ghost">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right">
+              <div className="grid gap-1 py-4">
+                <Link
+                  to="/"
+                  className="block px-4 py-2 text-lg font-medium hover:bg-muted rounded-md"
+                >
+                  Accueil
+                </Link>
+                <Link
+                  to="/add"
+                  className="block px-4 py-2 text-lg font-medium hover:bg-muted rounded-md"
+                >
+                  Ajouter
+                </Link>
+                <Link
+                  to="/history"
+                  className="block px-4 py-2 text-lg font-medium hover:bg-muted rounded-md"
+                >
+                  Historique
+                </Link>
+                <Link
+                  to="/stats"
+                  className="block px-4 py-2 text-lg font-medium hover:bg-muted rounded-md"
+                >
+                  Statistiques
+                </Link>
+                <Link
+                  to="/rewards"
+                  className="block px-4 py-2 text-lg font-medium hover:bg-muted rounded-md"
+                >
+                  Récompenses
+                </Link>
+                <Link
+                  to="/faq"
+                  className="block px-4 py-2 text-lg font-medium hover:bg-muted rounded-md"
+                >
+                  FAQ
+                </Link>
+                <Link
+                  to="/profile"
+                  className="block px-4 py-2 text-lg font-medium hover:bg-muted rounded-md"
+                >
+                  Profil
+                </Link>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-    </header>
+    </div>
   );
-}
+};
