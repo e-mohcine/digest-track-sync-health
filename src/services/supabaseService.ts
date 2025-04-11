@@ -234,7 +234,7 @@ export const subscribeToRealTimeUpdates = (
         schema: 'public',
         table: table
       },
-      callback
+      (payload) => callback(payload)
     )
     .subscribe();
 
