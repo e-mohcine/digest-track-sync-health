@@ -72,7 +72,8 @@ const Auth = () => {
       );
       
       if (result) {
-        navigate('/');
+        // Rediriger vers la page de profil après inscription réussie
+        navigate('/profile');
       }
     } finally {
       setIsLoading(false);
