@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { 
   StoolEntry, 
@@ -227,7 +228,8 @@ export const subscribeToRealTimeUpdates = (
 ) => {
   const channel = supabase
     .channel('schema-db-changes')
-    .on('postgres_changes', 
+    .on(
+      'postgres_changes', 
       { 
         event, 
         schema: 'public', 
