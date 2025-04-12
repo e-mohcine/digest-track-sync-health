@@ -10,6 +10,7 @@ import { LogIn, UserPlus, Loader2 } from 'lucide-react';
 import { signIn, signUp } from '@/services/supabaseService';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ const Auth = () => {
     e.preventDefault();
     
     if (signupData.password !== signupData.confirmPassword) {
-      // Toast error is handled in the service
+      toast.error('Les mots de passe ne correspondent pas');
       return;
     }
     
