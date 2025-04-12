@@ -4,7 +4,7 @@ import {
   createStoolEntry, 
   createSymptomEntry, 
   createMoodEntry 
-} from '@/services/supabaseService';
+} from '@/services';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 

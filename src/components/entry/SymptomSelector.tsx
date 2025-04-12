@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import { PlusCircle, Minus, Plus, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SymptomType } from '@/types/database.types';
-import { fetchSymptomTypes } from '@/services/supabaseService';
+import { fetchSymptomTypes } from '@/services';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
