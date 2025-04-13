@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Drop } from 'lucide-react';
+import { Droplet } from 'lucide-react';
 
 interface QuantitySelectorProps {
   selectedQuantity: string | null;
@@ -20,7 +20,7 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           onClick={() => onQuantitySelect('small')}
         >
           <div className="mb-2 text-intestitrack-blue">
-            <Drop className="h-6 w-6" />
+            <Droplet className="h-6 w-6" />
           </div>
           <span className="font-medium">Faible</span>
         </div>
@@ -29,8 +29,8 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           onClick={() => onQuantitySelect('normal')}
         >
           <div className="mb-2 text-intestitrack-blue flex">
-            <Drop className="h-6 w-6" />
-            <Drop className="h-6 w-6" />
+            <Droplet className="h-6 w-6" />
+            <Droplet className="h-6 w-6" />
           </div>
           <span className="font-medium">Normale</span>
         </div>
@@ -39,9 +39,9 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           onClick={() => onQuantitySelect('large')}
         >
           <div className="mb-2 text-intestitrack-blue flex">
-            <Drop className="h-6 w-6" />
-            <Drop className="h-6 w-6" />
-            <Drop className="h-6 w-6" />
+            <Droplet className="h-6 w-6" />
+            <Droplet className="h-6 w-6" />
+            <Droplet className="h-6 w-6" />
           </div>
           <span className="font-medium">Abondante</span>
         </div>
