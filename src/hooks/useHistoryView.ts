@@ -15,9 +15,19 @@ export const useHistoryView = () => {
   
   // Chargement initial des entrées
   useEffect(() => {
-    const storedEntries = getEntries();
-    setEntries(storedEntries);
-    setFilteredEntries(storedEntries);
+    const loadEntries = async () => {
+      try {
+        const storedEntries = await getEntries();
+        setEntries(storedEntries);
+        setFilteredEntries(storedEntries);
+      } catch (error) {
+        console.error('Erreur lors du chargement des entrées:', error);
+        setEntries([]);
+        setFilteredEntries([]);
+      }
+    };
+    
+    loadEntries();
   }, []);
 
   // Mise à jour des entrées filtrées lorsque les entrées changent

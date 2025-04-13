@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/popover"
 
 interface DateRangePickerProps {
-  value: DateRange
-  onChange: (date: DateRange) => void
-  className?: string
+  value: DateRange;
+  onChange: React.Dispatch<React.SetStateAction<DateRange>>;
+  className?: string;
 }
 
 export function DateRangePicker({

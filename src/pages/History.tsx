@@ -9,7 +9,7 @@ import { useHistoryView } from '@/hooks/useHistoryView';
 import { useRealtimeSubscription } from '@/hooks/useRealtimeSubscription';
 import { getEntries } from '@/services/storageService';
 import { toast } from 'sonner';
-import { Skeleton } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const History = () => {
   const {

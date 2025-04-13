@@ -22,7 +22,7 @@ const convertSupabaseEntriesToEntryData = (entries: StoolEntry[]): EntryData[] =
 
 export const saveEntry = (entry: EntryData): void => {
   // Sauvegarde dans localStorage
-  const existingEntries = getEntries();
+  const existingEntries = JSON.parse(localStorage.getItem(ENTRIES_KEY) || '[]');
   const newEntries = [...existingEntries, entry];
   localStorage.setItem(ENTRIES_KEY, JSON.stringify(newEntries));
   
@@ -75,16 +75,15 @@ export const getEntries = async (): Promise<EntryData[]> => {
   }
 };
 
-export const getEntriesByDate = (date: Date): Promise<EntryData[]> => {
-  return getEntries().then(entries => {
-    return entries.filter((entry) => {
-      const entryDate = new Date(entry.time);
-      return (
-        entryDate.getDate() === date.getDate() &&
-        entryDate.getMonth() === date.getMonth() &&
-        entryDate.getFullYear() === date.getFullYear()
-      );
-    });
+export const getEntriesByDate = async (date: Date): Promise<EntryData[]> => {
+  const entries = await getEntries();
+  return entries.filter((entry) => {
+    const entryDate = new Date(entry.time);
+    return (
+      entryDate.getDate() === date.getDate() &&
+      entryDate.getMonth() === date.getMonth() &&
+      entryDate.getFullYear() === date.getFullYear()
+    );
   });
 };
 

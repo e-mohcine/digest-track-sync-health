@@ -10,14 +10,12 @@ import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { EntryData } from '@/hooks/useEntryData';
 import { getEntries } from '@/services/storageService';
 import { toast } from 'sonner';
+import { DateRange } from 'react-day-picker';
 
 export const DataExport: React.FC = () => {
   const [exportFormat, setExportFormat] = useState<'pdf' | 'csv'>('pdf');
   const [isLoading, setIsLoading] = useState(false);
-  const [dateRange, setDateRange] = useState<{
-    from: Date;
-    to: Date;
-  }>({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: subMonths(new Date(), 1),
     to: new Date()
   });
@@ -32,7 +30,10 @@ export const DataExport: React.FC = () => {
       // Filtrer par date
       const filteredEntries = allEntries.filter(entry => {
         const entryDate = new Date(entry.time);
-        return entryDate >= dateRange.from && entryDate <= dateRange.to;
+        return dateRange.from && 
+               entryDate >= dateRange.from && 
+               dateRange.to && 
+               entryDate <= dateRange.to;
       });
       
       if (filteredEntries.length === 0) {
