@@ -35,20 +35,46 @@ export const BristolType: React.FC<BristolTypeProps> = ({
     }
   };
 
+  const getBristolColor = () => {
+    switch (type) {
+      case 1:
+      case 2:
+        return 'bg-amber-100';
+      case 3:
+      case 4:
+        return 'bg-green-100';
+      case 5:
+      case 6:
+      case 7:
+        return 'bg-blue-100';
+      default:
+        return 'bg-gray-100';
+    }
+  };
+
   return (
     <div 
       className={cn(
         "bristol-scale-card border rounded-lg transition-all",
         getSize(),
+        getBristolColor(),
         selected && "ring-2 ring-offset-2 ring-intestitrack-blue bg-blue-50",
         onClick && "cursor-pointer hover:bg-muted",
         `bristol-type-${type}`
       )}
       onClick={onClick}
     >
-      <div className="flex flex-col items-center">
-        <span className="font-bold text-lg mb-1">Type {type}</span>
-        {showLabel && <p className="text-center">{descriptions[type as keyof typeof descriptions]}</p>}
+      <div className="flex items-center">
+        <div className={cn(
+          "w-12 h-12 rounded-full flex items-center justify-center mr-3",
+          `bristol-type-${type} border`
+        )}>
+          <span className="font-bold">{type}</span>
+        </div>
+        <div className="flex-1">
+          <span className="font-bold text-lg block">Type {type}</span>
+          {showLabel && <p className="text-sm">{descriptions[type as keyof typeof descriptions]}</p>}
+        </div>
       </div>
     </div>
   );

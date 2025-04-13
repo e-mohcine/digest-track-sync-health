@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Check, Clock, Calendar, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { TypeSelector } from '@/components/entry/TypeSelector';
-import { QuantitySelector } from '@/components/entry/QuantitySelector';
 import { NotesSection } from '@/components/entry/NotesSection';
 import { SymptomSelector } from '@/components/entry/SymptomSelector';
 import { MoodSelector } from '@/components/entry/MoodSelector';
@@ -20,10 +20,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
-import { Switch } from '@/components/ui/switch';
+import { fetchStoolEntries } from '@/services/stoolEntryService';
+import { useRealtimeSubscription } from '@/hooks/useRealtimeSubscription';
 
 const AddEntry = () => {
+  const [stoolEntries, setStoolEntries] = useState([]);
+  const [timeDialogOpen, setTimeDialogOpen] = useState(false);
+  
   const {
     entryData,
     isSubmitting,
@@ -42,7 +45,25 @@ const AddEntry = () => {
     isValidEntry
   } = useCompleteEntryData();
   
-  const [timeDialogOpen, setTimeDialogOpen] = useState(false);
+  // Charger les entrées initiales
+  useEffect(() => {
+    const loadEntries = async () => {
+      const entries = await fetchStoolEntries();
+      setStoolEntries(entries);
+    };
+    
+    loadEntries();
+  }, []);
+  
+  // S'abonner aux mises à jour en temps réel
+  useRealtimeSubscription({
+    table: 'stool_entries',
+    event: 'INSERT',
+    callback: (payload) => {
+      setStoolEntries(prev => [payload.new, ...prev]);
+      toast.success('Nouvelle entrée ajoutée');
+    }
+  });
 
   const handleSubmit = () => {
     if (!isValidEntry()) {
@@ -102,40 +123,13 @@ const AddEntry = () => {
             <TypeSelector 
               selectedType={entryData.stoolType} 
               onTypeSelect={handleStoolTypeSelect} 
+              hasBlood={entryData.hasBlood}
+              hasMucus={entryData.hasMucus}
+              onBloodToggle={handleToggleBlood}
+              onMucusToggle={handleToggleMucus}
+              selectedQuantity={entryData.stoolQuantity}
+              onQuantitySelect={handleStoolQuantitySelect}
             />
-            
-            <QuantitySelector 
-              selectedQuantity={entryData.stoolQuantity} 
-              onQuantitySelect={handleStoolQuantitySelect} 
-            />
-            
-            <div className="space-y-3">
-              <h2 className="text-lg font-medium mb-3">Détails cliniques</h2>
-              
-              <div className="bg-white rounded-lg p-4 shadow-sm">
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-red-500" />
-                    <span>Présence de sang</span>
-                  </div>
-                  <Switch 
-                    checked={entryData.hasBlood}
-                    onCheckedChange={handleToggleBlood}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-amber-500" />
-                    <span>Présence de mucus</span>
-                  </div>
-                  <Switch 
-                    checked={entryData.hasMucus}
-                    onCheckedChange={handleToggleMucus}
-                  />
-                </div>
-              </div>
-            </div>
           </div>
         </TabsContent>
 

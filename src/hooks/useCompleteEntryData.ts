@@ -1,6 +1,6 @@
 
 import { useStoolEntryData, StoolEntryData } from './useStoolEntryData';
-import { useSymptomEntryData, SymptomEntryData, SelectedSymptom } from './useSymptomEntryData';
+import { useSymptomEntryData, SymptomEntryData } from './useSymptomEntryData';
 import { useMoodEntryData, MoodEntryData } from './useMoodEntryData';
 import { useEntryTimeData } from './useEntryTimeData';
 import { useEntrySaving } from './useEntrySaving';
@@ -9,8 +9,8 @@ export interface CompleteEntryData extends StoolEntryData, SymptomEntryData, Moo
   entryTime: Date;
 }
 
-// Export the SelectedSymptom type explicitly
-export type { SelectedSymptom };
+// Export the SelectedSymptom type from the source
+export type { SelectedSymptom } from './useSymptomEntryData';
 
 export const useCompleteEntryData = () => {
   const {
