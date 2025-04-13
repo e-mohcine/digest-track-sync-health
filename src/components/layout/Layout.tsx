@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import { NavBar } from './NavBar';
 import { BottomNav } from './BottomNav';
 import { Toaster } from 'sonner';
+import { FloatingPoop } from '@/components/chat/FloatingPoop';
 
 export function Layout() {
   return (
@@ -14,6 +15,7 @@ export function Layout() {
       </main>
       <Toaster position="top-center" />
       <BottomNav />
+      <FloatingPoop />
     </div>
   );
 }

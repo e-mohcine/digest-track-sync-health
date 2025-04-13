@@ -126,3 +126,59 @@
 .quantity-large {
   @apply bg-intestitrack-alert-light border-intestitrack-alert text-black;
 }
+
+/* Animations de rebond */
+@keyframes bounce-small {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce-small {
+  animation: bounce-small 2s ease-in-out infinite;
+}
+
+/* Animation de pulsation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Animation de flottement */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Animation de rotation légère */
+@keyframes slight-rotate {
+  0%, 100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+.animate-slight-rotate {
+  animation: slight-rotate 5s ease-in-out infinite;
+}
