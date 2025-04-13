@@ -9,22 +9,19 @@ export const subscribeToRealTimeUpdates = (
   callback: (payload: any) => void
 ): () => void => {
   // Create a channel for realtime
-  const channel = supabase.channel('schema-db-changes');
+  const channel = supabase
+    .channel('schema-db-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: event,
+        schema: 'public',
+        table: table
+      },
+      (payload) => callback(payload)
+    )
+    .subscribe();
   
-  // Add a subscription to the channel
-  channel.on(
-    'postgres_changes',
-    {
-      event: event,
-      schema: 'public',
-      table: table
-    },
-    (payload) => callback(payload)
-  );
-  
-  // Start the subscription
-  channel.subscribe();
-
   // Return a function to unsubscribe
   return () => {
     supabase.removeChannel(channel);
