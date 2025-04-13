@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   BarChart, 
@@ -15,7 +14,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Calendar, ChevronDown } from 'lucide-react';
+import { Calendar, ChevronDown, Download, Share2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ReportShare } from '@/components/reports/ReportShare';
 
 const mockFrequencyData = [
   { day: 'Lun', count: 2 },
@@ -117,31 +117,38 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, description, trend 
 
 const Stats = () => {
   const [timeRange, setTimeRange] = useState('week');
+  const [showShareDialog, setShowShareDialog] = useState(false);
 
   return (
     <div className="space-y-6 pb-20 animate-fade-in">
       <section className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Statistiques</h1>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center">
-              <Calendar className="w-4 h-4 mr-2" />
-              <span>{timeRange === 'week' ? 'Cette semaine' : timeRange === 'month' ? 'Ce mois' : 'Cette année'}</span>
-              <ChevronDown className="w-4 h-4 ml-2" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setTimeRange('week')}>
-              Cette semaine
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTimeRange('month')}>
-              Ce mois
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTimeRange('year')}>
-              Cette année
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center">
+                <Calendar className="w-4 h-4 mr-2" />
+                <span>{timeRange === 'week' ? 'Cette semaine' : timeRange === 'month' ? 'Ce mois' : 'Cette année'}</span>
+                <ChevronDown className="w-4 h-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setTimeRange('week')}>
+                Cette semaine
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTimeRange('month')}>
+                Ce mois
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTimeRange('year')}>
+                Cette année
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button variant="outline" onClick={() => setShowShareDialog(true)}>
+            <Share2 className="w-4 h-4 mr-2" />
+            Partager
+          </Button>
+        </div>
       </section>
 
       <div className="grid grid-cols-2 gap-4">
@@ -325,6 +332,12 @@ const Stats = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <ReportShare 
+        open={showShareDialog} 
+        onOpenChange={setShowShareDialog} 
+        timeRange={timeRange as 'week' | 'month' | 'year'} 
+      />
     </div>
   );
 };

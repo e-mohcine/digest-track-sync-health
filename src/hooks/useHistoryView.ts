@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getEntries } from '@/services/storageService';
 import { EntryData } from '@/hooks/useEntryData';
 
@@ -13,20 +13,30 @@ export const useHistoryView = () => {
   const [filteredEntries, setFilteredEntries] = useState<EntryData[]>([]);
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
   
-  // Load entries from localStorage when component mounts
+  // Chargement initial des entrées
   useEffect(() => {
     const storedEntries = getEntries();
     setEntries(storedEntries);
     setFilteredEntries(storedEntries);
   }, []);
 
-  const handleMonthChange = (increment: number) => {
+  // Mise à jour des entrées filtrées lorsque les entrées changent
+  useEffect(() => {
+    if (activeFilter === null) {
+      setFilteredEntries(entries);
+    } else {
+      const filtered = entries.filter(entry => entry.type === activeFilter);
+      setFilteredEntries(filtered);
+    }
+  }, [entries, activeFilter]);
+
+  const handleMonthChange = useCallback((increment: number) => {
     const newDate = new Date(date);
     newDate.setMonth(newDate.getMonth() + increment);
     setDate(newDate);
-  };
+  }, [date]);
 
-  const handleFilterSelect = (type: number | null) => {
+  const handleFilterSelect = useCallback((type: number | null) => {
     setActiveFilter(type);
     
     if (type === null) {
@@ -35,17 +45,19 @@ export const useHistoryView = () => {
       const filtered = entries.filter(entry => entry.type === type);
       setFilteredEntries(filtered);
     }
-  };
+  }, [entries]);
 
   return {
     date,
     view,
     selectedDate,
     entries: filteredEntries,
+    allEntries: entries,
     activeFilter,
     setView,
     setSelectedDate,
     handleMonthChange,
-    handleFilterSelect
+    handleFilterSelect,
+    setEntries
   };
 };

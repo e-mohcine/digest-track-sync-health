@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { BristolIllustration } from './BristolIllustration';
 
 interface BristolTypeProps {
   type: number;
@@ -65,11 +66,8 @@ export const BristolType: React.FC<BristolTypeProps> = ({
       onClick={onClick}
     >
       <div className="flex items-center">
-        <div className={cn(
-          "w-12 h-12 rounded-full flex items-center justify-center mr-3",
-          `bristol-type-${type} border`
-        )}>
-          <span className="font-bold">{type}</span>
+        <div className="mr-3">
+          <BristolIllustration type={type} size={size === 'lg' ? 'lg' : 'md'} />
         </div>
         <div className="flex-1">
           <span className="font-bold text-lg block">Type {type}</span>
