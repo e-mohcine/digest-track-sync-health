@@ -8,8 +8,11 @@ export const subscribeToRealTimeUpdates = (
   event: 'INSERT' | 'UPDATE' | 'DELETE' | '*',
   callback: (payload: any) => void
 ): () => void => {
-  const channel = supabase
-    .channel('schema-db-changes')
+  // Create the channel
+  const channel = supabase.channel('schema-db-changes');
+  
+  // Subscribe to specific changes on the channel
+  channel
     .on(
       'postgres_changes', 
       { 
@@ -21,6 +24,7 @@ export const subscribeToRealTimeUpdates = (
     )
     .subscribe();
 
+  // Return a function to unsubscribe
   return () => {
     supabase.removeChannel(channel);
   };
