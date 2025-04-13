@@ -8,6 +8,8 @@ export interface EntryData {
   notes: string;
   time: Date;
   hasPhoto: boolean;
+  hasBlood?: boolean;
+  hasMucus?: boolean;
 }
 
 export const useEntryData = () => {
@@ -16,7 +18,9 @@ export const useEntryData = () => {
     quantity: null,
     notes: '',
     time: new Date(),
-    hasPhoto: false
+    hasPhoto: false,
+    hasBlood: false,
+    hasMucus: false
   });
 
   const handleTypeSelect = (type: number) => {
@@ -34,6 +38,14 @@ export const useEntryData = () => {
   const handleAddPhoto = () => {
     setEntryData(prev => ({ ...prev, hasPhoto: true }));
   };
+  
+  const handleToggleBlood = (value: boolean) => {
+    setEntryData(prev => ({ ...prev, hasBlood: value }));
+  };
+  
+  const handleToggleMucus = (value: boolean) => {
+    setEntryData(prev => ({ ...prev, hasMucus: value }));
+  };
 
   const resetEntryData = () => {
     setEntryData({
@@ -41,7 +53,9 @@ export const useEntryData = () => {
       quantity: null,
       notes: '',
       time: new Date(),
-      hasPhoto: false
+      hasPhoto: false,
+      hasBlood: false,
+      hasMucus: false
     });
   };
 
@@ -53,6 +67,8 @@ export const useEntryData = () => {
     handleQuantitySelect,
     handleNotesChange,
     handleAddPhoto,
+    handleToggleBlood,
+    handleToggleMucus,
     resetEntryData,
     isValid
   };

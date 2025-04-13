@@ -1,1 +1,26 @@
+
 project_id = "sbuplvahovigrrqtyfay"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://127.0.0.1"
+
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+
+[functions]
+[functions.chatbot]
+verify_jwt = true

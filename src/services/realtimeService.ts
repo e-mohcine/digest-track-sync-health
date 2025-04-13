@@ -13,9 +13,9 @@ export const subscribeToRealTimeUpdates = (
     .on(
       'postgres_changes', 
       { 
-        event, 
+        event: event, 
         schema: 'public', 
-        table 
+        table: table 
       },
       (payload) => callback(payload)
     )

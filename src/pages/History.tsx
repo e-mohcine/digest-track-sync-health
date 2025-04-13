@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CalendarDays, List } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarView } from '@/components/history/CalendarView';
@@ -9,6 +9,7 @@ import { useHistoryView } from '@/hooks/useHistoryView';
 import { useRealtimeSubscription } from '@/hooks/useRealtimeSubscription';
 import { getEntries } from '@/services/storageService';
 import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/card';
 
 const History = () => {
   const {
@@ -23,22 +24,38 @@ const History = () => {
     handleFilterSelect,
     setEntries
   } = useHistoryView();
+  
+  const [isLoading, setIsLoading] = useState(true);
 
   // Chargement initial des entrées
   useEffect(() => {
-    const storedEntries = getEntries();
-    setEntries(storedEntries);
+    const loadEntries = async () => {
+      setIsLoading(true);
+      try {
+        const storedEntries = await getEntries();
+        setEntries(storedEntries);
+      } catch (error) {
+        console.error("Erreur lors du chargement des entrées:", error);
+        toast.error("Erreur de chargement", {
+          description: "Impossible de charger l'historique"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadEntries();
   }, [setEntries]);
 
   // Abonnement aux mises à jour en temps réel des entrées
   useRealtimeSubscription({
     table: 'stool_entries',
     event: '*',
-    callback: (payload) => {
+    callback: async (payload) => {
       console.log('Mise à jour d\'entrée reçue:', payload);
       
-      // Actualiser les entrées depuis le stockage local
-      const updatedEntries = getEntries();
+      // Actualiser les entrées
+      const updatedEntries = await getEntries();
       setEntries(updatedEntries);
       
       if (payload.eventType === 'INSERT') {
@@ -74,18 +91,33 @@ const History = () => {
         </div>
       </section>
 
-      {view === 'calendar' && (
-        <CalendarView
-          date={date}
-          entries={entries}
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          handleMonthChange={handleMonthChange}
-        />
-      )}
+      {isLoading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      ) : entries.length === 0 ? (
+        <div className="text-center py-10 border rounded-lg">
+          <p className="text-muted-foreground">Aucune entrée n'a été enregistrée.</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Commencez par ajouter une entrée en utilisant le bouton + ci-dessous.
+          </p>
+        </div>
+      ) : (
+        <>
+          {view === 'calendar' && (
+            <CalendarView
+              date={date}
+              entries={entries}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              handleMonthChange={handleMonthChange}
+            />
+          )}
 
-      {view === 'list' && (
-        <ListView entries={entries} />
+          {view === 'list' && (
+            <ListView entries={entries} />
+          )}
+        </>
       )}
     </div>
   );
