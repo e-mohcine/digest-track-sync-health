@@ -38,10 +38,11 @@ export const BristolType: React.FC<BristolTypeProps> = ({
   return (
     <div 
       className={cn(
-        "bristol-scale-card bristol-type-" + type,
+        "bristol-scale-card border rounded-lg transition-all",
         getSize(),
-        selected && "ring-2 ring-offset-2 ring-intestitrack-blue",
-        onClick && "cursor-pointer"
+        selected && "ring-2 ring-offset-2 ring-intestitrack-blue bg-blue-50",
+        onClick && "cursor-pointer hover:bg-muted",
+        `bristol-type-${type}`
       )}
       onClick={onClick}
     >
