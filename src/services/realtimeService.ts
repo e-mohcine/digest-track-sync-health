@@ -16,7 +16,7 @@ export const subscribeToRealTimeUpdates = (
         schema: 'public', 
         table 
       },
-      callback
+      (payload) => callback(payload)
     )
     .subscribe();
 
