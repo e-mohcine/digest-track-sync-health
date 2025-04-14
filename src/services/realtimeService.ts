@@ -9,7 +9,7 @@ export const subscribeToRealTimeUpdates = (
 ): () => void => {
   // Create a channel for realtime
   const channel = supabase
-    .channel('schema-db-changes')
+    .channel(`public:${table}`)
     .on(
       'postgres_changes',
       {
