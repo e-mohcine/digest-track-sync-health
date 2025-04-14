@@ -60,13 +60,18 @@ export const useChatBot = () => {
       if (error) throw error;
       
       // Ajouter la réponse de l'assistant
-      addMessage(data.response, 'assistant');
+      if (data && data.response) {
+        addMessage(data.response, 'assistant');
+      } else {
+        throw new Error("Réponse invalide du chatbot");
+      }
       
     } catch (err: any) {
       setError(err.message || "Une erreur est survenue lors de la communication avec le chatbot.");
       toast.error("Erreur du chatbot", {
         description: err.message || "Une erreur est survenue lors de la communication avec le chatbot."
       });
+      console.error("Erreur chatbot:", err);
     } finally {
       setIsLoading(false);
     }
@@ -74,6 +79,7 @@ export const useChatBot = () => {
   
   const clearMessages = () => {
     setMessages([]);
+    setError(null);
   };
   
   return {

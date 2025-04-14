@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 // Clé d'API GROQ 
-const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY") || "";
+const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY") || "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";
 
 const DISALLOWED_TOPICS = [
   "cancer",

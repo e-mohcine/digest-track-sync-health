@@ -1,28 +1,35 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-// Fonctions pour gérer les abonnements en temps réel
-export const subscribeToRealTimeUpdates = (
-  table: string,
+/**
+ * S'abonne aux modifications en temps réel d'une table PostgreSQL dans Supabase.
+ * @param tableName - Nom de la table à observer
+ * @param event - Type d'événement ('INSERT', 'UPDATE', 'DELETE' ou '*')
+ * @param callback - Fonction à exécuter lors de la réception d'un événement
+ * @returns Une fonction pour se désabonner
+ */
+export function subscribeToRealTimeUpdates(
+  tableName: string,
   event: 'INSERT' | 'UPDATE' | 'DELETE' | '*',
   callback: (payload: any) => void
-): () => void => {
-  // Create a channel for realtime
-  const channel = supabase
-    .channel(`public:${table}`)
+): () => void {
+  // Pour la version récente de Supabase, nous devons utiliser cette syntaxe
+  const channel = supabase.channel(`table-changes-${tableName}`)
     .on(
       'postgres_changes',
       {
         event: event,
         schema: 'public',
-        table: table
+        table: tableName
       },
-      (payload) => callback(payload)
+      (payload) => {
+        callback(payload);
+      }
     )
     .subscribe();
-  
-  // Return a function to unsubscribe
+
+  // Retourner une fonction pour se désabonner
   return () => {
     supabase.removeChannel(channel);
   };
-};
+}
