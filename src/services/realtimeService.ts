@@ -14,7 +14,7 @@ export function subscribeToRealTimeUpdates(
   event: 'INSERT' | 'UPDATE' | 'DELETE' | '*',
   callback: (payload: any) => void
 ): () => void {
-  // Pour la version récente de Supabase, nous devons utiliser cette syntaxe
+  // Créer un channel unique pour cette table
   const channel = supabase.channel(`table-changes-${tableName}`);
   
   // Configuration du channel pour écouter les changements Postgres
