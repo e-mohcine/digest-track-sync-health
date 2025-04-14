@@ -21,7 +21,7 @@ export function subscribeToRealTimeUpdates(
   channel
     .on(
       'postgres_changes', 
-      {
+      { 
         event: event, 
         schema: 'public', 
         table: tableName 
