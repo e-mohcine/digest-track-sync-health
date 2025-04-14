@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Calendar, PlusCircle, BarChart2, Award } from 'lucide-react';
+import { Home, Calendar, PlusCircle, BarChart2, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function BottomNav() {
@@ -22,7 +22,7 @@ export function BottomNav() {
             isPrimary 
           />
           <NavItem to="/stats" icon={<BarChart2 />} label="Statistiques" isActive={isActive('/stats')} />
-          <NavItem to="/rewards" icon={<Award />} label="Récompenses" isActive={isActive('/rewards')} />
+          <NavItem to="/chat" icon={<MessageSquare />} label="Assistant" isActive={isActive('/chat')} />
         </div>
       </div>
     </nav>

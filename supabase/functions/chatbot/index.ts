@@ -7,8 +7,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Clé d'API GSK - utilise un secret Supabase
-const GSK_API_KEY = Deno.env.get("GSK_API_KEY") || "";
+// Clé d'API GROQ 
+const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY") || "";
 
 const DISALLOWED_TOPICS = [
   "cancer",
@@ -44,7 +44,7 @@ const generateMedicalDisclaimer = (): string => {
     "Pour tout problème de santé, veuillez consulter un médecin.";
 };
 
-// Fonction principale du chatbot
+// Fonction principale du chatbot avec GROQ
 async function processChat(userMessage: string): Promise<string> {
   // Vérification des heures d'opération
   if (!isWithinOperationalHours()) {
@@ -58,15 +58,50 @@ async function processChat(userMessage: string): Promise<string> {
       "Je peux vous aider sur des sujets généraux liés à la maladie de Crohn, aux MICI, aux troubles digestifs ou à la nutrition.";
   }
 
-  // Pour cette version, nous simulons une réponse
-  // Dans une implémentation réelle, nous utiliserions l'API GSK avec la clé sécurisée
-  const simulatedResponse = "Merci pour votre question sur " + 
-    (userMessage.length > 20 ? userMessage.substring(0, 20) + "..." : userMessage) + 
-    ". En tant qu'assistant IntestiTrack, je peux vous fournir des informations sur la maladie de Crohn, les MICI, " +
-    "les troubles digestifs et la nutrition. " + 
-    "\n\n" + generateMedicalDisclaimer();
+  try {
+    // Appel à l'API GROQ
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama3-8b-8192",
+        messages: [
+          {
+            role: "system",
+            content: `Tu es un assistant spécialisé dans la santé digestive, l'alimentation et la maladie de Crohn pour l'application IntestiTrack. 
+            Fournis des informations précises et bienveillantes sur la nutrition, les troubles digestifs et le suivi des selles.
+            Évite tout conseil médical spécifique. Si l'utilisateur demande des informations nutritionnelles sur un aliment, 
+            donne des détails sur ses qualités nutritives et son impact potentiel sur le transit.
+            Sois concis, empathique et adapté à un public qui peut inclure des enfants.`
+          },
+          {
+            role: "user",
+            content: userMessage
+          }
+        ],
+        temperature: 0.5,
+        max_tokens: 1000
+      })
+    });
 
-  return simulatedResponse;
+    const data = await response.json();
+    let result = data.choices[0].message.content;
+
+    // Ajouter le disclaimer pour les questions liées à la santé
+    if (userMessage.toLowerCase().includes("symptôme") || 
+        userMessage.toLowerCase().includes("douleur") || 
+        userMessage.toLowerCase().includes("traitement")) {
+      result += "\n\n" + generateMedicalDisclaimer();
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Erreur avec l'API GROQ:", error);
+    return "Désolé, je rencontre des difficultés techniques. Veuillez réessayer plus tard.";
+  }
 }
 
 serve(async (req) => {

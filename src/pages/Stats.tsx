@@ -14,7 +14,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Calendar, ChevronDown, Download, Share2 } from 'lucide-react';
+import { Calendar, ChevronDown, Download, Share2, Utensils } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ReportShare } from '@/components/reports/ReportShare';
+import { FoodAnalyzer } from '@/components/food/FoodAnalyzer';
 
 const mockFrequencyData = [
   { day: 'Lun', count: 2 },
@@ -122,7 +123,7 @@ const Stats = () => {
   return (
     <div className="space-y-6 pb-20 animate-fade-in">
       <section className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Statistiques</h1>
+        <h1 className="text-2xl font-semibold">Statistiques & Nutrition</h1>
         <div className="flex gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -151,39 +152,42 @@ const Stats = () => {
         </div>
       </section>
 
-      <div className="grid grid-cols-2 gap-4">
-        <StatsCard 
-          title="Fréquence moyenne" 
-          value="2.1" 
-          description="selles par jour" 
-          trend="up"
-        />
-        <StatsCard 
-          title="Type le plus fréquent" 
-          value="Type 4" 
-          description="saucisse molle" 
-          trend="stable"
-        />
-        <StatsCard 
-          title="Consistance" 
-          value="85%" 
-          description="dans la normale (types 3-5)" 
-          trend="up"
-        />
-        <StatsCard 
-          title="Heure habituelle" 
-          value="Matin" 
-          description="entre 7h et 10h" 
-        />
-      </div>
-
-      <Tabs defaultValue="frequency">
+      <Tabs defaultValue="stats">
         <TabsList className="grid grid-cols-2 mb-4">
-          <TabsTrigger value="frequency">Fréquence & Types</TabsTrigger>
-          <TabsTrigger value="trends">Tendances</TabsTrigger>
+          <TabsTrigger value="stats">Statistiques</TabsTrigger>
+          <TabsTrigger value="nutrition">
+            <Utensils className="w-4 h-4 mr-2" />
+            Analyse Alimentaire
+          </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="frequency" className="space-y-4">
+        <TabsContent value="stats" className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <StatsCard 
+              title="Fréquence moyenne" 
+              value="2.1" 
+              description="selles par jour" 
+              trend="up"
+            />
+            <StatsCard 
+              title="Type le plus fréquent" 
+              value="Type 4" 
+              description="saucisse molle" 
+              trend="stable"
+            />
+            <StatsCard 
+              title="Consistance" 
+              value="85%" 
+              description="dans la normale (types 3-5)" 
+              trend="up"
+            />
+            <StatsCard 
+              title="Heure habituelle" 
+              value="Matin" 
+              description="entre 7h et 10h" 
+            />
+          </div>
+
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">Fréquence par jour</CardTitle>
@@ -234,27 +238,6 @@ const Stats = () => {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Moment de la journée</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={mockTimeOfDayData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
-                    <XAxis dataKey="name" />
-                    <YAxis allowDecimals={false} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#5BBE88" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="trends" className="space-y-4">
-          <Card>
-            <CardHeader className="pb-2">
               <CardTitle className="text-lg">Évolution du type (dernière semaine)</CardTitle>
             </CardHeader>
             <CardContent>
@@ -281,55 +264,10 @@ const Stats = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg">Analyses avancées</CardTitle>
-                <Select defaultValue="correlation">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Sélectionner..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="correlation">Corrélations</SelectItem>
-                    <SelectItem value="patterns">Habitudes</SelectItem>
-                    <SelectItem value="predictions">Prédictions</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted/30 rounded-lg p-6 text-center">
-                <h3 className="text-lg font-medium mb-2">Corrélation détectée</h3>
-                <p className="text-muted-foreground mb-4">
-                  Nous avons détecté une corrélation entre vos repas épicés et l'apparition de selles de type 6 dans les 24h.
-                </p>
-                <Button variant="outline">Voir les détails</Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Synthèse mensuelle</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="border-l-4 border-intestitrack-green pl-4 py-1">
-                  <h4 className="font-medium">Points positifs</h4>
-                  <p className="text-sm text-muted-foreground">Régularité améliorée par rapport au mois dernier (+15%)</p>
-                </div>
-                <div className="border-l-4 border-intestitrack-alert pl-4 py-1">
-                  <h4 className="font-medium">Points d'attention</h4>
-                  <p className="text-sm text-muted-foreground">Augmentation des selles de type 6 (possiblement lié à l'alimentation)</p>
-                </div>
-                <div className="border-l-4 border-intestitrack-blue pl-4 py-1">
-                  <h4 className="font-medium">Recommandation</h4>
-                  <p className="text-sm text-muted-foreground">Surveillez votre consommation d'aliments irritants</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <TabsContent value="nutrition">
+          <FoodAnalyzer />
         </TabsContent>
       </Tabs>
 
