@@ -26,9 +26,7 @@ export function subscribeToRealTimeUpdates(
         schema: 'public', 
         table: tableName 
       }, 
-      (payload) => {
-        callback(payload);
-      }
+      callback
     )
     .subscribe();
 
