@@ -15,16 +15,17 @@ export function subscribeToRealTimeUpdates(
   callback: (payload: any) => void
 ): () => void {
   // Pour la version récente de Supabase, nous devons utiliser cette syntaxe
-  const channel: RealtimeChannel = supabase.channel(`table-changes-${tableName}`);
+  const channel = supabase.channel(`table-changes-${tableName}`);
   
+  // Configuration du channel pour écouter les changements Postgres
   channel
     .on(
-      'postgres_changes',
-      {
-        event: event,
-        schema: 'public',
-        table: tableName
-      },
+      'postgres_changes', 
+      { 
+        event: event, 
+        schema: 'public', 
+        table: tableName 
+      }, 
       (payload) => {
         callback(payload);
       }
