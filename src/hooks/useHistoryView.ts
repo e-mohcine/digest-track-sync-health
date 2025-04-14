@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getEntries } from '@/services/storageService';
 import { EntryData } from '@/hooks/useEntryData';
 
-export type ViewType = 'calendar' | 'list';
+export type ViewType = 'calendar' | 'list' | 'nutrition';
 
 export const useHistoryView = () => {
   const [date, setDate] = useState<Date>(new Date());
