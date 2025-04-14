@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 /**
  * S'abonne aux modifications en temps réel d'une table PostgreSQL dans Supabase.
@@ -14,7 +15,9 @@ export function subscribeToRealTimeUpdates(
   callback: (payload: any) => void
 ): () => void {
   // Pour la version récente de Supabase, nous devons utiliser cette syntaxe
-  const channel = supabase.channel(`table-changes-${tableName}`)
+  const channel: RealtimeChannel = supabase.channel(`table-changes-${tableName}`);
+  
+  channel
     .on(
       'postgres_changes',
       {
