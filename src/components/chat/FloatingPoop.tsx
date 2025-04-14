@@ -1,16 +1,20 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Maximize2, Minimize2, X } from 'lucide-react';
+import { MessageSquare, Maximize2, Minimize2, X, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ChatBot } from './ChatBot';
 import { useAuth } from '@/hooks/useAuth';
+import Draggable from 'react-draggable';
+import { Resizable } from 'react-resizable';
 
 export const FloatingPoop: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
+  const [chatSize, setChatSize] = useState({ width: 350, height: 450 });
+  const [isDragging, setIsDragging] = useState(false);
   const { user } = useAuth();
   const animationRef = useRef<number | null>(null);
   const chatBubbleRef = useRef<HTMLDivElement>(null);
@@ -86,33 +90,79 @@ export const FloatingPoop: React.FC = () => {
   
   const toggleExpand = () => {
     setIsExpanded(prev => !prev);
+    if (!isExpanded) {
+      setChatSize({ width: window.innerWidth > 768 ? 600 : window.innerWidth * 0.9, height: window.innerHeight * 0.8 });
+    } else {
+      setChatSize({ width: 350, height: 450 });
+    }
+  };
+  
+  const onDragStart = () => {
+    setIsDragging(true);
+  };
+  
+  const onDragStop = () => {
+    setIsDragging(false);
+  };
+  
+  const onResize = (event: any, { size }: { size: { width: number, height: number } }) => {
+    setChatSize({ width: size.width, height: size.height });
+  };
+
+  const handleMaximize = () => {
+    setChatSize({ 
+      width: window.innerWidth > 768 ? window.innerWidth * 0.7 : window.innerWidth * 0.95, 
+      height: window.innerHeight * 0.8 
+    });
+    setIsExpanded(true);
   };
   
   return (
     <div className="fixed z-50 bottom-20 right-5 md:bottom-10 md:right-10">
       {/* Chatbot ouvert */}
       {isOpen && (
-        <Card 
-          ref={chatBubbleRef}
-          className={`fixed z-50 bottom-32 right-5 md:right-10 shadow-lg transition-all duration-300 overflow-hidden ${
-            isExpanded 
-              ? 'w-[90vw] h-[70vh] md:w-[450px] md:h-[600px]' 
-              : 'w-[90vw] h-[400px] md:w-[350px] md:h-[450px]'
-          }`}
+        <Draggable
+          handle=".drag-handle"
+          onStart={onDragStart}
+          onStop={onDragStop}
+          bounds="body"
         >
-          <div className="absolute top-2 right-2 flex items-center space-x-1">
-            <Button size="icon" variant="ghost" onClick={toggleExpand} className="h-8 w-8">
-              {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-            </Button>
-            <Button size="icon" variant="ghost" onClick={toggleChat} className="h-8 w-8">
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <div className="w-full h-full overflow-hidden">
-            <ChatBot />
-          </div>
-        </Card>
+          <Card 
+            ref={chatBubbleRef}
+            className={`fixed z-50 bottom-32 right-5 md:right-10 shadow-lg transition-all duration-300 overflow-hidden`}
+            style={{ 
+              width: `${chatSize.width}px`, 
+              height: `${chatSize.height}px`,
+              resize: 'both',
+              overflow: 'hidden'
+            }}
+          >
+            <div className="drag-handle absolute top-0 left-0 right-0 h-10 bg-intestitrack-blue/10 cursor-move flex items-center justify-between px-3">
+              <div className="flex items-center">
+                <Move className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-sm font-medium">Assistant IntestiTrack</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                {!isExpanded ? (
+                  <Button size="icon" variant="ghost" onClick={handleMaximize} className="h-8 w-8">
+                    <Maximize2 className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button size="icon" variant="ghost" onClick={toggleExpand} className="h-8 w-8">
+                    <Minimize2 className="h-4 w-4" />
+                  </Button>
+                )}
+                <Button size="icon" variant="ghost" onClick={toggleChat} className="h-8 w-8">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="w-full h-full pt-10 overflow-hidden">
+              <ChatBot expanded={isExpanded} />
+            </div>
+          </Card>
+        </Draggable>
       )}
       
       {/* Bouton flottant crotte animée */}
@@ -154,7 +204,7 @@ export const FloatingPoop: React.FC = () => {
           
           {/* Indicateur de nouveau message */}
           {!isOpen && (
-            <div className="absolute -top-1 -right-1 flex items-center justify-center h-6 w-6 bg-red-500 rounded-full text-white text-xs font-bold">
+            <div className="absolute -top-1 -right-1 flex items-center justify-center h-6 w-6 bg-red-500 rounded-full text-white text-xs font-bold animate-pulse">
               1
             </div>
           )}

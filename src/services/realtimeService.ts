@@ -1,6 +1,5 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { RealtimeChannel } from '@supabase/supabase-js';
 
 // Fonctions pour gérer les abonnements en temps réel
 export const subscribeToRealTimeUpdates = (
