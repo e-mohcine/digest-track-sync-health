@@ -6,7 +6,6 @@ import { Card } from '@/components/ui/card';
 import { ChatBot } from './ChatBot';
 import { useAuth } from '@/hooks/useAuth';
 import Draggable from 'react-draggable';
-import { Resizable } from 'react-resizable';
 
 export const FloatingPoop: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -103,10 +102,6 @@ export const FloatingPoop: React.FC = () => {
   
   const onDragStop = () => {
     setIsDragging(false);
-  };
-  
-  const onResize = (event: any, { size }: { size: { width: number, height: number } }) => {
-    setChatSize({ width: size.width, height: size.height });
   };
 
   const handleMaximize = () => {

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, Send, Heart, Smile, Clock, Brain, Info, HelpCircle, Sparkles } from 'lucide-react';
+import { AlertTriangle, Send, Heart, Smile, Clock, Brain, Info, HelpCircle, Sparkles, MessageSquare } from 'lucide-react';
 import { useChatBot } from '@/hooks/useChatBot';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
