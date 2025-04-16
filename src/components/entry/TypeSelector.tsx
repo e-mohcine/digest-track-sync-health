@@ -2,8 +2,9 @@
 import React from 'react';
 import { BristolType } from '@/components/stool/BristolType';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Droplet, AlertTriangle } from 'lucide-react';
+import { Droplet, AlertTriangle, Plus } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 
 interface TypeSelectorProps {
   selectedType: number | null;

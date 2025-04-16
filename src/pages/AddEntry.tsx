@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Check, Clock, Calendar, AlertTriangle } from 'lucide-react';
+import { Check, Clock, Calendar, AlertTriangle, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { TypeSelector } from '@/components/entry/TypeSelector';
 import { NotesSection } from '@/components/entry/NotesSection';
-import { SymptomSelector } from '@/components/entry/SymptomSelector';
+import { SimpleSymptomSelector } from '@/components/entry/SimpleSymptomSelector';
 import { MoodSelector } from '@/components/entry/MoodSelector';
 import { useCompleteEntryData } from '@/hooks/useCompleteEntryData';
 import { format } from 'date-fns';
@@ -26,6 +26,7 @@ import { useRealtimeSubscription } from '@/hooks/useRealtimeSubscription';
 const AddEntry = () => {
   const [stoolEntries, setStoolEntries] = useState([]);
   const [timeDialogOpen, setTimeDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('type');
   
   const {
     entryData,
@@ -110,7 +111,7 @@ const AddEntry = () => {
         </Dialog>
       </section>
 
-      <Tabs defaultValue="type" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-4 mb-6">
           <TabsTrigger value="type">Selles</TabsTrigger>
           <TabsTrigger value="symptoms">Symptômes</TabsTrigger>
@@ -134,7 +135,7 @@ const AddEntry = () => {
         </TabsContent>
 
         <TabsContent value="symptoms">
-          <SymptomSelector
+          <SimpleSymptomSelector
             selectedSymptoms={entryData.symptoms}
             onSymptomSelect={handleSetSymptoms}
           />
@@ -181,6 +182,21 @@ const AddEntry = () => {
           )}
         </Button>
       </div>
+      
+      <Button
+        className="fixed bottom-40 right-4 z-10 rounded-full bg-intestitrack-blue hover:bg-intestitrack-blue/90 shadow-lg h-14 w-14"
+        onClick={() => {
+          setActiveTab('type');
+          handleStoolTypeSelect(4); // Type moyen (normal) par défaut
+          handleStoolQuantitySelect('normal');
+          toast.success('Selle normale ajoutée', { 
+            description: 'Vous pouvez maintenant compléter les détails et enregistrer' 
+          });
+        }}
+      >
+        <PlusCircle className="h-6 w-6" />
+        <span className="sr-only">Ajouter une selle normale</span>
+      </Button>
     </div>
   );
 };

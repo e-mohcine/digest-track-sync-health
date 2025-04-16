@@ -19,7 +19,7 @@ export const subscribeToRealtimeChanges = (config: RealtimeSubscriptionConfig) =
   // Création d'un canal unique pour cette souscription
   const channelId = `realtime_${table}_${event}_${Date.now()}`;
   
-  // S'abonner aux changements en temps réel avec la syntaxe correcte
+  // S'abonner aux changements en temps réel avec la syntaxe correcte de Supabase
   const channel = supabase
     .channel(channelId)
     .on(
