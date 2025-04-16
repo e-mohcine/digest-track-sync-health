@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -137,6 +138,7 @@ const Index = () => {
         mood_level: moodData.moodLevel,
         stress_level: moodData.stressLevel,
         sleep_quality: moodData.sleepQuality,
+        notes: null, // Ajout de la propriété manquante 'notes'
         occurred_at: new Date().toISOString()
       });
       
