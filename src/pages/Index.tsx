@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -11,7 +10,8 @@ import DailyStatusCard from '@/components/dashboard/DailyStatusCard';
 import WeeklyChart from '@/components/dashboard/WeeklyChart';
 import RecentEntriesList from '@/components/dashboard/RecentEntriesList';
 import RecommendationCard from '@/components/dashboard/RecommendationCard';
-import { fetchStoolEntries, fetchSymptomEntries, fetchMoodEntries, subscribeToRealTimeUpdates } from '@/services/supabaseService';
+import { fetchStoolEntries, fetchSymptomEntries, fetchMoodEntries } from '@/services/supabaseService';
+import { subscribeToRealtimeChanges } from '@/services/realtimeService';
 import { StoolEntry, SymptomEntry, MoodEntry } from '@/types/database.types';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -45,53 +45,65 @@ const Index = () => {
   // Abonnement aux mises à jour en temps réel
   useEffect(() => {
     // Mise à jour des entrées de selles en temps réel
-    const unsubscribeStool = subscribeToRealTimeUpdates('stool_entries', '*', (payload) => {
-      console.log('Mise à jour stool_entries:', payload);
-      
-      if (payload.eventType === 'INSERT') {
-        setStoolEntries(prev => [payload.new as StoolEntry, ...prev]);
-      } else if (payload.eventType === 'UPDATE') {
-        setStoolEntries(prev => 
-          prev.map(entry => entry.id === payload.new.id ? payload.new as StoolEntry : entry)
-        );
-      } else if (payload.eventType === 'DELETE') {
-        setStoolEntries(prev => 
-          prev.filter(entry => entry.id !== payload.old.id)
-        );
+    const unsubscribeStool = subscribeToRealtimeChanges({
+      table: 'stool_entries',
+      event: '*',
+      callback: (payload) => {
+        console.log('Mise à jour stool_entries:', payload);
+        
+        if (payload.eventType === 'INSERT') {
+          setStoolEntries(prev => [payload.new as StoolEntry, ...prev]);
+        } else if (payload.eventType === 'UPDATE') {
+          setStoolEntries(prev => 
+            prev.map(entry => entry.id === payload.new.id ? payload.new as StoolEntry : entry)
+          );
+        } else if (payload.eventType === 'DELETE') {
+          setStoolEntries(prev => 
+            prev.filter(entry => entry.id !== payload.old.id)
+          );
+        }
       }
     });
     
     // Mise à jour des entrées de symptômes en temps réel
-    const unsubscribeSymptom = subscribeToRealTimeUpdates('symptom_entries', '*', (payload) => {
-      console.log('Mise à jour symptom_entries:', payload);
-      
-      if (payload.eventType === 'INSERT') {
-        setSymptomEntries(prev => [payload.new as SymptomEntry, ...prev]);
-      } else if (payload.eventType === 'UPDATE') {
-        setSymptomEntries(prev => 
-          prev.map(entry => entry.id === payload.new.id ? payload.new as SymptomEntry : entry)
-        );
-      } else if (payload.eventType === 'DELETE') {
-        setSymptomEntries(prev => 
-          prev.filter(entry => entry.id !== payload.old.id)
-        );
+    const unsubscribeSymptom = subscribeToRealtimeChanges({
+      table: 'symptom_entries',
+      event: '*',
+      callback: (payload) => {
+        console.log('Mise à jour symptom_entries:', payload);
+        
+        if (payload.eventType === 'INSERT') {
+          setSymptomEntries(prev => [payload.new as SymptomEntry, ...prev]);
+        } else if (payload.eventType === 'UPDATE') {
+          setSymptomEntries(prev => 
+            prev.map(entry => entry.id === payload.new.id ? payload.new as SymptomEntry : entry)
+          );
+        } else if (payload.eventType === 'DELETE') {
+          setSymptomEntries(prev => 
+            prev.filter(entry => entry.id !== payload.old.id)
+          );
+        }
       }
     });
     
     // Mise à jour des entrées d'humeur en temps réel
-    const unsubscribeMood = subscribeToRealTimeUpdates('mood_entries', '*', (payload) => {
-      console.log('Mise à jour mood_entries:', payload);
-      
-      if (payload.eventType === 'INSERT') {
-        setMoodEntries(prev => [payload.new as MoodEntry, ...prev]);
-      } else if (payload.eventType === 'UPDATE') {
-        setMoodEntries(prev => 
-          prev.map(entry => entry.id === payload.new.id ? payload.new as MoodEntry : entry)
-        );
-      } else if (payload.eventType === 'DELETE') {
-        setMoodEntries(prev => 
-          prev.filter(entry => entry.id !== payload.old.id)
-        );
+    const unsubscribeMood = subscribeToRealtimeChanges({
+      table: 'mood_entries',
+      event: '*',
+      callback: (payload) => {
+        console.log('Mise à jour mood_entries:', payload);
+        
+        if (payload.eventType === 'INSERT') {
+          setMoodEntries(prev => [payload.new as MoodEntry, ...prev]);
+        } else if (payload.eventType === 'UPDATE') {
+          setMoodEntries(prev => 
+            prev.map(entry => entry.id === payload.new.id ? payload.new as MoodEntry : entry)
+          );
+        } else if (payload.eventType === 'DELETE') {
+          setMoodEntries(prev => 
+            prev.filter(entry => entry.id !== payload.old.id)
+          );
+        }
       }
     });
     

@@ -27,8 +27,8 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ result }) => {
           <h3 className="font-medium">Macronutriments:</h3>
           <ul className="text-sm list-disc pl-5">
             <li>Protéines: {result.macronutrients.proteins}</li>
-            <li>Glucides: {result.macronutriments.carbs}</li>
-            <li>Lipides: {result.macronutriments.fats}</li>
+            <li>Glucides: {result.macronutrients.carbs}</li>
+            <li>Lipides: {result.macronutrients.fats}</li>
           </ul>
         </div>
         
