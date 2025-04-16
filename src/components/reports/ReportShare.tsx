@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Download, Mail, Copy, FileText, FilePdf } from 'lucide-react';
+import { Download, Mail, Copy, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ReportShareProps {
@@ -221,7 +221,7 @@ export const ReportShare: React.FC<ReportShareProps> = ({
                 onClick={handleGeneratePdf}
                 disabled={generatingPdf}
               >
-                <FilePdf className="h-6 w-6" />
+                <FileText className="h-6 w-6" />
                 <div className="text-left">
                   <div className="font-medium">Document PDF</div>
                   <div className="text-xs">Avec graphiques et analyse IA</div>
