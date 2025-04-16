@@ -11,5 +11,6 @@ export const useRealtimeSubscription = (config: RealtimeSubscriptionConfig) => {
     return () => {
       unsubscribe();
     };
+  // Since config is an object, we need to extract the values we want to depend on
   }, [config.table, config.event]);
 };
