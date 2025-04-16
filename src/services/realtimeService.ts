@@ -1,37 +1,42 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { RealtimeChannel } from '@supabase/supabase-js';
+
+export interface RealtimeSubscriptionConfig {
+  table: string;
+  event: 'INSERT' | 'UPDATE' | 'DELETE' | '*';
+  callback: (payload: any) => void;
+}
 
 /**
- * S'abonne aux modifications en temps réel d'une table PostgreSQL dans Supabase.
- * @param tableName - Nom de la table à observer
- * @param event - Type d'événement ('INSERT', 'UPDATE', 'DELETE' ou '*')
- * @param callback - Fonction à exécuter lors de la réception d'un événement
- * @returns Une fonction pour se désabonner
+ * Crée un canal Supabase pour s'abonner aux changements en temps réel d'une table spécifique.
+ * 
+ * @param config Configuration de l'abonnement en temps réel
+ * @returns Fonction pour se désabonner du canal
  */
-export function subscribeToRealTimeUpdates(
-  tableName: string,
-  event: 'INSERT' | 'UPDATE' | 'DELETE' | '*',
-  callback: (payload: any) => void
-): () => void {
-  // Créer un channel unique pour cette table
-  const channel = supabase.channel(`table-changes-${tableName}`);
+export const subscribeToRealtimeChanges = (config: RealtimeSubscriptionConfig) => {
+  const { table, event, callback } = config;
   
-  // Configuration du channel pour écouter les changements Postgres
-  channel
+  // Création d'un canal unique pour cette souscription
+  const channelId = `realtime_${table}_${event}_${Date.now()}`;
+  
+  // S'abonner aux changements en temps réel
+  const channel = supabase
+    .channel(channelId)
     .on(
-      'postgres_changes', 
-      { 
-        event: event, 
-        schema: 'public', 
-        table: tableName 
-      }, 
-      callback
+      'postgres_changes',
+      {
+        event: event,
+        schema: 'public',
+        table: table
+      },
+      (payload) => {
+        callback(payload);
+      }
     )
     .subscribe();
-
-  // Retourner une fonction pour se désabonner
+  
+  // Renvoyer une fonction de nettoyage pour se désabonner
   return () => {
     supabase.removeChannel(channel);
   };
-}
+};

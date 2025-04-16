@@ -10,54 +10,8 @@ const corsHeaders = {
 // Clé d'API GROQ 
 const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY") || "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";
 
-const DISALLOWED_TOPICS = [
-  "cancer",
-  "chimiothérapie",
-  "radiothérapie",
-  "diagnostic",
-  "médicaments",
-  "ordonnance",
-  "prescription",
-  "posologie",
-  "traitement spécifique",
-  "douleurs aigues",
-  "chirurgie"
-];
-
-// Heures d'opération: 8h-22h
-const isWithinOperationalHours = () => {
-  const now = new Date();
-  const hour = now.getHours();
-  return hour >= 8 && hour < 22;
-};
-
-// Vérifie si la demande contient des sujets interdits
-const containsDisallowedTopics = (input: string): boolean => {
-  const lowerInput = input.toLowerCase();
-  return DISALLOWED_TOPICS.some(topic => lowerInput.includes(topic.toLowerCase()));
-};
-
-// Génère un avertissement médical
-const generateMedicalDisclaimer = (): string => {
-  return "IMPORTANT: Je ne suis pas un professionnel médical et ne peux pas fournir de conseil médical personnalisé. " +
-    "Les informations que je fournis sont générales et éducatives. " +
-    "Pour tout problème de santé, veuillez consulter un médecin.";
-};
-
 // Fonction principale du chatbot avec GROQ
 async function processChat(userMessage: string): Promise<string> {
-  // Vérification des heures d'opération
-  if (!isWithinOperationalHours()) {
-    return "Je suis désolé, je ne suis disponible que de 8h à 22h. Merci de revenir pendant mes heures d'ouverture.";
-  }
-
-  // Vérification des sujets interdits
-  if (containsDisallowedTopics(userMessage)) {
-    return "Je ne peux pas répondre à cette question car elle semble concerner un sujet médical spécifique qui nécessite l'avis d'un professionnel de santé. " +
-      "Veuillez consulter votre médecin pour ce type de demande. " +
-      "Je peux vous aider sur des sujets généraux liés à la maladie de Crohn, aux MICI, aux troubles digestifs ou à la nutrition.";
-  }
-
   try {
     // Appel à l'API GROQ
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -73,8 +27,6 @@ async function processChat(userMessage: string): Promise<string> {
             role: "system",
             content: `Tu es un assistant spécialisé dans la santé digestive, l'alimentation et la maladie de Crohn pour l'application IntestiTrack. 
             Fournis des informations précises et bienveillantes sur la nutrition, les troubles digestifs et le suivi des selles.
-            Évite tout conseil médical spécifique. Si l'utilisateur demande des informations nutritionnelles sur un aliment, 
-            donne des détails sur ses qualités nutritives et son impact potentiel sur le transit.
             Sois concis, empathique et adapté à un public qui peut inclure des enfants.`
           },
           {
@@ -88,16 +40,7 @@ async function processChat(userMessage: string): Promise<string> {
     });
 
     const data = await response.json();
-    let result = data.choices[0].message.content;
-
-    // Ajouter le disclaimer pour les questions liées à la santé
-    if (userMessage.toLowerCase().includes("symptôme") || 
-        userMessage.toLowerCase().includes("douleur") || 
-        userMessage.toLowerCase().includes("traitement")) {
-      result += "\n\n" + generateMedicalDisclaimer();
-    }
-
-    return result;
+    return data.choices[0].message.content;
   } catch (error) {
     console.error("Erreur avec l'API GROQ:", error);
     return "Désolé, je rencontre des difficultés techniques. Veuillez réessayer plus tard.";
@@ -133,8 +76,7 @@ serve(async (req) => {
 
     // Retour de la réponse
     return new Response(JSON.stringify({ 
-      response,
-      operationalHours: isWithinOperationalHours()
+      response
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });

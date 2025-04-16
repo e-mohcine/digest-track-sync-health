@@ -15,13 +15,6 @@ export const useChatBot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const isOperationalHours = (): boolean => {
-    const now = new Date();
-    const hour = now.getHours();
-    // Le chatbot est opérationnel de 8h à 22h
-    return hour >= 8 && hour < 22;
-  };
-  
   const addMessage = (content: string, role: 'user' | 'assistant') => {
     const newMessage: ChatMessage = {
       id: crypto.randomUUID(),
@@ -36,14 +29,6 @@ export const useChatBot = () => {
   
   const sendMessage = async (content: string) => {
     if (!content.trim()) return;
-    
-    // Vérifier les heures d'opération
-    if (!isOperationalHours()) {
-      toast.error("Le chatbot est indisponible entre 22h et 8h du matin.", {
-        description: "Veuillez réessayer pendant les heures d'opération."
-      });
-      return;
-    }
     
     // Ajouter le message de l'utilisateur
     addMessage(content, 'user');
@@ -87,7 +72,6 @@ export const useChatBot = () => {
     isLoading,
     error,
     sendMessage,
-    clearMessages,
-    isOperationalHours
+    clearMessages
   };
 };

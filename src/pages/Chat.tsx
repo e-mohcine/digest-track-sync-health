@@ -8,7 +8,7 @@ const Chat = () => {
     <div className="space-y-6 pb-8 animate-fade-in">
       <section>
         <h1 className="text-2xl font-semibold mb-6">Assistant IntestiTrack</h1>
-        <Card className="bg-background">
+        <Card className="bg-background h-[75vh]">
           <ChatBot />
         </Card>
       </section>

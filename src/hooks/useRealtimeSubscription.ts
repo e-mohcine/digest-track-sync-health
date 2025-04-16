@@ -1,31 +1,15 @@
 
-import { useEffect, useCallback } from 'react';
-import { subscribeToRealTimeUpdates } from '@/services/realtimeService';
+import { useEffect } from 'react';
+import { subscribeToRealtimeChanges, RealtimeSubscriptionConfig } from '@/services/realtimeService';
 
-interface UseRealtimeSubscriptionProps {
-  table: string;
-  event: 'INSERT' | 'UPDATE' | 'DELETE' | '*';
-  callback: (payload: any) => void;
-  enabled?: boolean;
-}
-
-export const useRealtimeSubscription = ({
-  table,
-  event,
-  callback,
-  enabled = true
-}: UseRealtimeSubscriptionProps) => {
-  const memoizedCallback = useCallback(callback, [callback]);
-
+export const useRealtimeSubscription = (config: RealtimeSubscriptionConfig) => {
   useEffect(() => {
-    if (!enabled) return;
+    // S'abonner aux changements
+    const unsubscribe = subscribeToRealtimeChanges(config);
     
-    // S'abonner aux modifications en temps réel
-    const unsubscribe = subscribeToRealTimeUpdates(table, event, memoizedCallback);
-    
-    // Se désabonner lors du démontage du composant
+    // Se désabonner lors du démontage
     return () => {
       unsubscribe();
     };
-  }, [table, event, memoizedCallback, enabled]);
+  }, [config.table, config.event]);
 };

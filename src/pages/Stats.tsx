@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   BarChart, 
   Bar, 
@@ -13,8 +13,10 @@ import {
   PieChart,
   Pie,
   Cell,
+  AreaChart,
+  Area
 } from 'recharts';
-import { Calendar, ChevronDown, Download, Share2, Utensils } from 'lucide-react';
+import { Calendar, ChevronDown, Download, Share2, Utensils, Heart, Brain, Moon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,6 +35,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ReportShare } from '@/components/reports/ReportShare';
 import { FoodAnalyzer } from '@/components/food/FoodAnalyzer';
+import { supabase } from '@/integrations/supabase/client';
+import { fetchMoodEntries } from '@/services/moodService';
 
 const mockFrequencyData = [
   { day: 'Lun', count: 2 },
@@ -87,9 +91,10 @@ interface StatsCardProps {
   value: string;
   description: string;
   trend?: 'up' | 'down' | 'stable';
+  icon?: React.ReactNode;
 }
 
-const StatsCard: React.FC<StatsCardProps> = ({ title, value, description, trend }) => {
+const StatsCard: React.FC<StatsCardProps> = ({ title, value, description, trend, icon }) => {
   const trendColor = trend === 'up' ? 'text-intestitrack-green' : 
                     trend === 'down' ? 'text-destructive' : 'text-muted-foreground';
   
@@ -119,11 +124,41 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, description, trend 
 const Stats = () => {
   const [timeRange, setTimeRange] = useState('week');
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState('stats');
+  const [moodData, setMoodData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadMoodData = async () => {
+      setIsLoading(true);
+      try {
+        const entries = await fetchMoodEntries();
+        
+        const formattedEntries = entries.map(entry => ({
+          date: new Date(entry.occurred_at).toLocaleDateString('fr-FR'),
+          mood: entry.mood_level,
+          stress: entry.stress_level || 0,
+          sleep: entry.sleep_quality || 0,
+          timestamp: new Date(entry.occurred_at).getTime()
+        }));
+        
+        formattedEntries.sort((a, b) => a.timestamp - b.timestamp);
+        
+        setMoodData(formattedEntries);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données d'humeur:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadMoodData();
+  }, []);
 
   return (
     <div className="space-y-6 pb-20 animate-fade-in">
       <section className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Statistiques & Nutrition</h1>
+        <h1 className="text-2xl font-semibold">Statistiques & Analyses</h1>
         <div className="flex gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -152,12 +187,19 @@ const Stats = () => {
         </div>
       </section>
 
-      <Tabs defaultValue="stats">
-        <TabsList className="grid grid-cols-2 mb-4">
-          <TabsTrigger value="stats">Statistiques</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid grid-cols-3 mb-4">
+          <TabsTrigger value="stats">
+            <BarChart className="w-4 h-4 mr-2" />
+            Selles
+          </TabsTrigger>
+          <TabsTrigger value="mood">
+            <Heart className="w-4 h-4 mr-2" />
+            Humeur & Bien-être
+          </TabsTrigger>
           <TabsTrigger value="nutrition">
             <Utensils className="w-4 h-4 mr-2" />
-            Analyse Alimentaire
+            Nutrition
           </TabsTrigger>
         </TabsList>
         
@@ -260,6 +302,100 @@ const Stats = () => {
                       activeDot={{ r: 8, stroke: '#4A9DD6', strokeWidth: 2, fill: '#4A9DD6' }}
                     />
                   </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="mood" className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <StatsCard 
+              title="Humeur moyenne" 
+              value="3.7/5" 
+              description="derniers 7 jours" 
+              trend="up"
+              icon={<Heart className="h-4 w-4 text-red-500" />}
+            />
+            <StatsCard 
+              title="Niveau de stress" 
+              value="2.5/5" 
+              description="en baisse" 
+              trend="down"
+              icon={<Brain className="h-4 w-4 text-purple-500" />}
+            />
+            <StatsCard 
+              title="Qualité du sommeil" 
+              value="3.2/5" 
+              description="stable" 
+              trend="stable"
+              icon={<Moon className="h-4 w-4 text-blue-500" />}
+            />
+            <StatsCard 
+              title="Corrélation humeur-symptômes" 
+              value="Modérée" 
+              description="impact observé" 
+              icon={<Share2 className="h-4 w-4 text-green-500" />}
+            />
+          </div>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Évolution de l'humeur</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={moodData.length > 0 ? moodData : [
+                    { date: '01/04', mood: 3, stress: 4, sleep: 2 },
+                    { date: '02/04', mood: 2, stress: 5, sleep: 2 },
+                    { date: '03/04', mood: 3, stress: 3, sleep: 3 },
+                    { date: '04/04', mood: 4, stress: 2, sleep: 4 },
+                    { date: '05/04', mood: 5, stress: 1, sleep: 4 },
+                    { date: '06/04', mood: 4, stress: 2, sleep: 3 },
+                    { date: '07/04', mood: 3, stress: 3, sleep: 3 },
+                  ]} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
+                    <XAxis dataKey="date" />
+                    <YAxis domain={[0, 5]} />
+                    <Tooltip />
+                    <Legend />
+                    <Area type="monotone" dataKey="mood" name="Humeur" stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
+                    <Area type="monotone" dataKey="stress" name="Stress" stroke="#ff7300" fill="#ff7300" fillOpacity={0.3} />
+                    <Area type="monotone" dataKey="sleep" name="Sommeil" stroke="#2C82C9" fill="#2C82C9" fillOpacity={0.3} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Corrélation Humeur-Symptômes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart 
+                    data={[
+                      { name: 'J-3', humeur: 2, symptomes: 4 },
+                      { name: 'J-2', humeur: 3, symptomes: 3 },
+                      { name: 'J-1', humeur: 3, symptomes: 2 },
+                      { name: 'J', humeur: 4, symptomes: 1 },
+                      { name: 'J+1', humeur: 4, symptomes: 1 },
+                      { name: 'J+2', humeur: 5, symptomes: 0 },
+                      { name: 'J+3', humeur: 4, symptomes: 1 },
+                    ]}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis domain={[0, 5]} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="humeur" name="Niveau d'humeur" fill="#8884d8" />
+                    <Bar dataKey="symptomes" name="Intensité des symptômes" fill="#FF9F43" />
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>

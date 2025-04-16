@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, Send, Info, MessageSquare } from 'lucide-react';
+import { Send, Info, MessageSquare } from 'lucide-react';
 import { useChatBot } from '@/hooks/useChatBot';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -16,7 +16,7 @@ interface ChatBotProps {
 }
 
 export const ChatBot: React.FC<ChatBotProps> = ({ expanded = false }) => {
-  const { messages, isLoading, sendMessage, isOperationalHours, clearMessages } = useChatBot();
+  const { messages, isLoading, sendMessage, clearMessages } = useChatBot();
   const [input, setInput] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -26,7 +26,9 @@ export const ChatBot: React.FC<ChatBotProps> = ({ expanded = false }) => {
     "Comment fonctionne l'échelle de Bristol ?",
     "Quels aliments sont bons pour le transit ?",
     "Comment gérer une poussée de Crohn ?",
-    "Quels conseils pour éviter la constipation ?"
+    "Quels conseils pour éviter la constipation ?",
+    "Quels sont les symptômes courants des MICI ?",
+    "Comment l'alimentation affecte-t-elle les selles ?"
   ];
   
   // Auto-focus input on component mount
@@ -66,15 +68,9 @@ export const ChatBot: React.FC<ChatBotProps> = ({ expanded = false }) => {
     <div className="flex flex-col h-full border rounded-md shadow-sm">
       <div className="bg-muted/30 px-4 py-2 text-sm flex items-center justify-between rounded-t-md">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-amber-500" />
-          <span>Cet assistant ne remplace pas l'avis d'un médecin.</span>
+          <Info className="h-4 w-4 text-intestitrack-blue" />
+          <span>Assistant santé digestive IntestiTrack</span>
         </div>
-        
-        {!isOperationalHours() && (
-          <span className="text-sm font-normal text-muted-foreground">
-            Disponible de 8h à 22h
-          </span>
-        )}
       </div>
       
       <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
@@ -158,12 +154,12 @@ export const ChatBot: React.FC<ChatBotProps> = ({ expanded = false }) => {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Tapez votre message..."
             className="border-intestitrack-blue/30 focus:border-intestitrack-blue"
-            disabled={!isOperationalHours() || isLoading}
+            disabled={isLoading}
           />
           <Button 
             type="submit" 
             size="icon" 
-            disabled={!isOperationalHours() || isLoading}
+            disabled={isLoading}
             className="bg-intestitrack-blue hover:bg-intestitrack-blue/90"
           >
             <Send className="h-4 w-4" />
