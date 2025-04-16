@@ -33,7 +33,9 @@ export const subscribeToRealtimeChanges = (config: RealtimeSubscriptionConfig) =
         callback(payload);
       }
     )
-    .subscribe();
+    .subscribe((status) => {
+      console.log(`Realtime subscription status for ${table}: ${status}`);
+    });
   
   // Renvoyer une fonction de nettoyage pour se désabonner
   return () => {
