@@ -10,10 +10,14 @@ import DailyStatusCard from '@/components/dashboard/DailyStatusCard';
 import WeeklyChart from '@/components/dashboard/WeeklyChart';
 import RecentEntriesList from '@/components/dashboard/RecentEntriesList';
 import RecommendationCard from '@/components/dashboard/RecommendationCard';
+import { MoodSelector } from '@/components/entry/MoodSelector';
+import { useMoodEntryData } from '@/hooks/useMoodEntryData';
+import { createMoodEntry } from '@/services/moodService';
 import { fetchStoolEntries, fetchSymptomEntries, fetchMoodEntries } from '@/services/supabaseService';
 import { subscribeToRealtimeChanges } from '@/services/realtimeService';
 import { StoolEntry, SymptomEntry, MoodEntry } from '@/types/database.types';
 import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 const Index = () => {
   const { user } = useAuth();
@@ -21,6 +25,8 @@ const Index = () => {
   const [symptomEntries, setSymptomEntries] = useState<SymptomEntry[]>([]);
   const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showMoodForm, setShowMoodForm] = useState(false);
+  const { moodData, handleSetMoodLevel, handleSetStressLevel, handleSetSleepQuality, resetMoodData } = useMoodEntryData();
   
   useEffect(() => {
     const loadData = async () => {
@@ -125,6 +131,26 @@ const Index = () => {
     };
   };
   
+  const handleSaveMood = async () => {
+    try {
+      const result = await createMoodEntry({
+        mood_level: moodData.moodLevel,
+        stress_level: moodData.stressLevel,
+        sleep_quality: moodData.sleepQuality,
+        occurred_at: new Date().toISOString()
+      });
+      
+      if (result) {
+        toast.success("Humeur enregistrée avec succès");
+        setShowMoodForm(false);
+        resetMoodData();
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement de l'humeur:", error);
+      toast.error("Erreur lors de l'enregistrement");
+    }
+  };
+  
   const dailyStreak = 7;
   const badgesCount = 3;
   const totalEntries = stoolEntries.length + symptomEntries.length + moodEntries.length;
@@ -159,6 +185,69 @@ const Index = () => {
       ) : (
         <>
           <DailyStatusCard lastEntry={lastEntry} />
+
+          <section>
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-lg font-semibold">Comment vous sentez-vous aujourd'hui ?</h2>
+              <Button 
+                variant="ghost" 
+                onClick={() => setShowMoodForm(!showMoodForm)} 
+                className="text-intestitrack-blue"
+              >
+                {showMoodForm ? "Masquer" : "Modifier"}
+              </Button>
+            </div>
+            
+            {showMoodForm ? (
+              <div className="space-y-4">
+                <MoodSelector
+                  moodLevel={moodData.moodLevel}
+                  stressLevel={moodData.stressLevel}
+                  sleepQuality={moodData.sleepQuality}
+                  onMoodChange={handleSetMoodLevel}
+                  onStressChange={handleSetStressLevel}
+                  onSleepChange={handleSetSleepQuality}
+                />
+                <div className="flex justify-end space-x-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setShowMoodForm(false);
+                      resetMoodData();
+                    }}
+                  >
+                    Annuler
+                  </Button>
+                  <Button 
+                    onClick={handleSaveMood}
+                    className="bg-intestitrack-blue hover:bg-intestitrack-blue/90"
+                  >
+                    Enregistrer
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Card className="bg-intestitrack-blue-light border-none mb-4">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Dernière humeur :</p>
+                    <p className="text-sm">
+                      {moodEntries.length > 0 
+                        ? `Niveau ${moodEntries[0].mood_level}/5 - ${format(new Date(moodEntries[0].occurred_at), 'HH:mm', { locale: fr })}`
+                        : "Pas encore d'enregistrement aujourd'hui"}
+                    </p>
+                  </div>
+                  <Button 
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowMoodForm(true)}
+                  >
+                    Mettre à jour
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </section>
 
           <section className="grid grid-cols-3 gap-3">
             <Card className="bg-intestitrack-blue-light border-none">

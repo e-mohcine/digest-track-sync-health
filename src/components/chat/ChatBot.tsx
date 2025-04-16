@@ -1,15 +1,14 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Send, Info, MessageSquare } from 'lucide-react';
+import { Send, Info, MessageSquare, CornerDownLeft } from 'lucide-react';
 import { useChatBot } from '@/hooks/useChatBot';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface ChatBotProps {
   expanded?: boolean;
@@ -36,7 +35,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ expanded = false }) => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [expanded]);
   
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -59,28 +58,49 @@ export const ChatBot: React.FC<ChatBotProps> = ({ expanded = false }) => {
     toast.success("Question envoyée !");
   };
   
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+  
   const resetChat = () => {
     clearMessages();
     toast.success("Conversation réinitialisée");
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
   
   return (
-    <div className="flex flex-col h-full border rounded-md shadow-sm">
-      <div className="bg-muted/30 px-4 py-2 text-sm flex items-center justify-between rounded-t-md">
+    <div className="flex flex-col h-full">
+      <div className="bg-muted/30 px-4 py-2 text-sm flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Info className="h-4 w-4 text-intestitrack-blue" />
-          <span>Assistant santé digestive IntestiTrack</span>
+          <span>Assistant santé digestive</span>
         </div>
+        {messages.length > 0 && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={resetChat} 
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Nouvelle conversation
+          </Button>
+        )}
       </div>
       
       <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
-        <div className="space-y-4">
+        <div className="space-y-4 pb-4">
           {messages.length === 0 ? (
             <div className="space-y-4">
               <div className="text-center py-6">
-                <div className="mb-4 inline-block">
+                <div className="mb-4 inline-block p-4 bg-intestitrack-blue/10 rounded-full">
                   <MessageSquare className="h-12 w-12 text-intestitrack-blue" />
                 </div>
+                <h3 className="text-lg font-medium mb-2">Comment puis-je vous aider ?</h3>
                 <p className="text-muted-foreground">Posez une question ou choisissez une suggestion ci-dessous.</p>
               </div>
               
@@ -99,16 +119,6 @@ export const ChatBot: React.FC<ChatBotProps> = ({ expanded = false }) => {
             </div>
           ) : (
             <>
-              <div className="flex justify-end mb-4">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={resetChat} 
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                >
-                  Réinitialiser la conversation
-                </Button>
-              </div>
               {messages.map((msg) => (
                 <div 
                   key={msg.id} 
@@ -116,15 +126,15 @@ export const ChatBot: React.FC<ChatBotProps> = ({ expanded = false }) => {
                 >
                   <div 
                     className={`
-                      max-w-[80%] rounded-lg px-4 py-2
+                      max-w-[85%] rounded-lg px-4 py-3
                       ${msg.role === 'user' 
-                        ? 'bg-intestitrack-blue text-white ml-auto' 
-                        : 'bg-muted mr-auto'
+                        ? 'bg-intestitrack-blue text-white ml-auto rounded-br-none' 
+                        : 'bg-muted mr-auto rounded-bl-none'
                       }
                     `}
                   >
-                    <div className="text-sm">{msg.content}</div>
-                    <div className="text-xs mt-1 opacity-70">
+                    <div className="text-sm whitespace-pre-wrap">{msg.content}</div>
+                    <div className="text-xs mt-1 opacity-70 flex justify-end">
                       {format(msg.timestamp, 'HH:mm', { locale: fr })}
                     </div>
                   </div>
@@ -135,10 +145,11 @@ export const ChatBot: React.FC<ChatBotProps> = ({ expanded = false }) => {
           
           {isLoading && (
             <div className="flex justify-start animate-pulse">
-              <div className="max-w-[80%] bg-muted rounded-lg p-4 mr-auto">
+              <div className="max-w-[80%] bg-muted rounded-lg p-4 mr-auto rounded-bl-none">
                 <div className="flex items-center gap-2">
-                  <Skeleton className="h-4 w-4 rounded-full" />
-                  <Skeleton className="h-4 w-32" />
+                  <div className="bg-muted-foreground/30 h-2 w-2 rounded-full animate-bounce" />
+                  <div className="bg-muted-foreground/30 h-2 w-2 rounded-full animate-bounce [animation-delay:0.2s]" />
+                  <div className="bg-muted-foreground/30 h-2 w-2 rounded-full animate-bounce [animation-delay:0.4s]" />
                 </div>
               </div>
             </div>
@@ -146,26 +157,31 @@ export const ChatBot: React.FC<ChatBotProps> = ({ expanded = false }) => {
         </div>
       </ScrollArea>
       
-      <CardFooter className="border-t p-4">
-        <form onSubmit={handleSubmit} className="flex w-full gap-2">
+      <div className="border-t p-4">
+        <form onSubmit={handleSubmit} className="flex w-full gap-2 items-center">
           <Input
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Tapez votre message..."
-            className="border-intestitrack-blue/30 focus:border-intestitrack-blue"
+            className="border-intestitrack-blue/30 focus-visible:ring-intestitrack-blue focus-visible:ring-offset-0"
             disabled={isLoading}
           />
           <Button 
             type="submit" 
             size="icon" 
-            disabled={isLoading}
-            className="bg-intestitrack-blue hover:bg-intestitrack-blue/90"
+            disabled={isLoading || !input.trim()}
+            className="bg-intestitrack-blue hover:bg-intestitrack-blue/90 transition-colors"
           >
-            <Send className="h-4 w-4" />
+            {isLoading ? (
+              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+            ) : (
+              input.trim() ? <Send className="h-4 w-4" /> : <CornerDownLeft className="h-4 w-4" />
+            )}
           </Button>
         </form>
-      </CardFooter>
+      </div>
     </div>
   );
 };

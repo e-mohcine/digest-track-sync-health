@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { FloatingChatButton } from './FloatingChatButton';
 import { FloatingChatWindow } from './FloatingChatWindow';
+import { toast } from 'sonner';
 
 export const FloatingPoop: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,7 +11,15 @@ export const FloatingPoop: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   
   const toggleChat = () => {
-    setIsOpen(prev => !prev);
+    setIsOpen(prev => {
+      const newState = !prev;
+      if (newState) {
+        toast.info("Assistant IntestiTrack", {
+          description: "Comment puis-je vous aider aujourd'hui ?"
+        });
+      }
+      return newState;
+    });
   };
   
   const toggleExpand = () => {
