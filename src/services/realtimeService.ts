@@ -23,12 +23,12 @@ export const subscribeToRealtimeChanges = (config: RealtimeSubscriptionConfig) =
   const channel = supabase
     .channel(channelId)
     .on(
-      'postgres_changes',
-      {
-        event: event,
-        schema: 'public',
-        table: table
-      },
+      'postgres_changes', 
+      { 
+        event: event, 
+        schema: 'public', 
+        table: table 
+      }, 
       (payload) => {
         callback(payload);
       }

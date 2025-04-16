@@ -22,7 +22,6 @@ const Index = () => {
   const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Chargement des données
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -42,9 +41,7 @@ const Index = () => {
     loadData();
   }, []);
   
-  // Abonnement aux mises à jour en temps réel
   useEffect(() => {
-    // Mise à jour des entrées de selles en temps réel
     const unsubscribeStool = subscribeToRealtimeChanges({
       table: 'stool_entries',
       event: '*',
@@ -65,7 +62,6 @@ const Index = () => {
       }
     });
     
-    // Mise à jour des entrées de symptômes en temps réel
     const unsubscribeSymptom = subscribeToRealtimeChanges({
       table: 'symptom_entries',
       event: '*',
@@ -86,7 +82,6 @@ const Index = () => {
       }
     });
     
-    // Mise à jour des entrées d'humeur en temps réel
     const unsubscribeMood = subscribeToRealtimeChanges({
       table: 'mood_entries',
       event: '*',
@@ -114,7 +109,6 @@ const Index = () => {
     };
   }, []);
   
-  // Données pour l'affichage
   const getLastEntry = () => {
     if (stoolEntries.length === 0) {
       return { type: 0, time: "jamais", quantity: "normal" };
@@ -131,13 +125,11 @@ const Index = () => {
     };
   };
   
-  // Statistiques
-  const dailyStreak = 7; // À calculer en fonction des données réelles
-  const badgesCount = 3; // À récupérer de la base de données
+  const dailyStreak = 7;
+  const badgesCount = 3;
   const totalEntries = stoolEntries.length + symptomEntries.length + moodEntries.length;
   const lastEntry = getLastEntry();
   
-  // Détection des problèmes potentiels
   const liquidStools = stoolEntries.filter(entry => 
     entry.bristol_type >= 6 && 
     new Date(entry.occurred_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
@@ -147,7 +139,6 @@ const Index = () => {
   
   return (
     <div className="space-y-6 pt-2 pb-20 animate-fade-in">
-      {/* Section de bienvenue */}
       <section className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-semibold">Bonjour, {user?.user_metadata?.first_name || 'Utilisateur'}</h1>
@@ -167,10 +158,8 @@ const Index = () => {
         </div>
       ) : (
         <>
-          {/* Carte d'état quotidien */}
           <DailyStatusCard lastEntry={lastEntry} />
 
-          {/* Statistiques rapides */}
           <section className="grid grid-cols-3 gap-3">
             <Card className="bg-intestitrack-blue-light border-none">
               <CardContent className="p-3 flex flex-col items-center">
@@ -199,7 +188,6 @@ const Index = () => {
             </Card>
           </section>
 
-          {/* Graphique hebdomadaire */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
@@ -212,7 +200,6 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          {/* Alertes médicales si nécessaire */}
           {showAlert && (
             <section>
               <Card className="bg-intestitrack-alert-light border-intestitrack-alert">
@@ -232,14 +219,12 @@ const Index = () => {
             </section>
           )}
 
-          {/* Recommandations */}
           <RecommendationCard 
             title="Restez hydraté" 
             description="N'oubliez pas de bien vous hydrater, surtout en cas de selles molles ou liquides."
             icon={<Droplets className="h-5 w-5" />}
           />
 
-          {/* Entrées récentes */}
           <section>
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg font-semibold">Entrées récentes</h2>
@@ -252,7 +237,6 @@ const Index = () => {
         </>
       )}
       
-      {/* Bouton d'ajout flottant */}
       <Link to="/add" className="fixed bottom-24 right-4 z-10">
         <Button size="lg" className="rounded-full h-14 w-14 bg-intestitrack-blue hover:bg-intestitrack-blue/90 shadow-lg">
           <PlusCircle className="h-6 w-6" />
