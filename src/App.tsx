@@ -14,7 +14,6 @@ import Profile from "./pages/Profile";
 import FAQ from "./pages/FAQ";
 import RGPD from "./pages/RGPD";
 import Auth from "./pages/Auth";
-import Chat from "./pages/Chat"; // Ajout de la page de chat
 import NotFound from "./pages/NotFound";
 import { useAuth } from './hooks/useAuth';
 
@@ -59,7 +58,6 @@ const App = () => (
             <Route path="/stats" element={<Stats />} />
             <Route path="/rewards" element={<Rewards />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/chat" element={<Chat />} /> {/* Ajout de la route pour le chat */}
             <Route path="/faq" element={<FAQ />} />
             <Route path="/rgpd" element={<RGPD />} />
           </Route>

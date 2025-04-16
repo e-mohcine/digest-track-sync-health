@@ -30,6 +30,8 @@ const DailyStatusCard: React.FC<DailyStatusCardProps> = ({ lastEntry }) => {
       return "Tout va bien aujourd'hui !";
     } else if (lastEntry.type === 2 || lastEntry.type === 6) {
       return "Surveillance recommandée";
+    } else if (lastEntry.type === 0) {
+      return "Pas encore d'entrée aujourd'hui";
     } else {
       return "Consultez votre médecin";
     }
@@ -42,18 +44,20 @@ const DailyStatusCard: React.FC<DailyStatusCardProps> = ({ lastEntry }) => {
           <div>
             <h2 className="text-lg font-semibold mb-1">Comment ça va aujourd'hui ?</h2>
             <p className="text-sm">{getStatusText()}</p>
-            <div className="flex mt-2 space-x-2">
-              <span className="bg-white bg-opacity-50 px-2 py-1 rounded-md text-xs">
-                Dernière: Type {lastEntry.type}
-              </span>
-              <span className="bg-white bg-opacity-50 px-2 py-1 rounded-md text-xs">
-                Il y a {lastEntry.time}
-              </span>
-            </div>
+            {lastEntry.type > 0 && (
+              <div className="flex mt-2 space-x-2">
+                <span className="bg-white bg-opacity-50 px-2 py-1 rounded-md text-xs">
+                  Dernière: Type {lastEntry.type}
+                </span>
+                <span className="bg-white bg-opacity-50 px-2 py-1 rounded-md text-xs">
+                  {lastEntry.time === "jamais" ? "Pas d'entrée" : `Il y a ${lastEntry.time}`}
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex flex-col items-center">
             {getMoodIcon()}
-            <span className="text-xs mt-1">Status</span>
+            <span className="text-xs mt-1">Statut</span>
           </div>
         </div>
       </CardContent>

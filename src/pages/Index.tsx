@@ -11,8 +11,11 @@ import DailyStatusCard from '@/components/dashboard/DailyStatusCard';
 import WeeklyChart from '@/components/dashboard/WeeklyChart';
 import RecentEntriesList from '@/components/dashboard/RecentEntriesList';
 import RecommendationCard from '@/components/dashboard/RecommendationCard';
+import HealthSuggestion from '@/components/dashboard/HealthSuggestion';
 import { MoodSelector } from '@/components/entry/MoodSelector';
+import SymptomSummary from '@/components/entry/SymptomSummary';
 import { useMoodEntryData } from '@/hooks/useMoodEntryData';
+import { useSymptomEntryData } from '@/hooks/useSymptomEntryData';
 import { createMoodEntry } from '@/services/moodService';
 import { fetchStoolEntries, fetchSymptomEntries, fetchMoodEntries } from '@/services/supabaseService';
 import { subscribeToRealtimeChanges } from '@/services/realtimeService';
@@ -27,7 +30,10 @@ const Index = () => {
   const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMoodForm, setShowMoodForm] = useState(false);
+  const [showSymptomsSummary, setShowSymptomsSummary] = useState(true);
   const { moodData, handleSetMoodLevel, handleSetStressLevel, handleSetSleepQuality, resetMoodData } = useMoodEntryData();
+  const { symptomData } = useSymptomEntryData();
+  const [suggestionType, setSuggestionType] = useState<'hydration' | 'nutrition' | 'stress' | 'sleep'>('hydration');
   
   useEffect(() => {
     const loadData = async () => {
@@ -49,6 +55,13 @@ const Index = () => {
   }, []);
   
   useEffect(() => {
+    // Sélectionner un type de suggestion aléatoire chaque jour
+    const suggestionTypes: Array<'hydration' | 'nutrition' | 'stress' | 'sleep'> = [
+      'hydration', 'nutrition', 'stress', 'sleep'
+    ];
+    const today = new Date().getDate();
+    setSuggestionType(suggestionTypes[today % suggestionTypes.length]);
+    
     const unsubscribeStool = subscribeToRealtimeChanges({
       table: 'stool_entries',
       event: '*',
@@ -152,6 +165,25 @@ const Index = () => {
       toast.error("Erreur lors de l'enregistrement");
     }
   };
+
+  // Extraire les symptômes pour la vue sommaire
+  const getRecentSymptoms = () => {
+    if (symptomEntries.length === 0) return [];
+    
+    // Calculer la date d'il y a 24h
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+    
+    // Filtrer les entrées des dernières 24h
+    return symptomEntries
+      .filter(entry => new Date(entry.occurred_at) >= oneDayAgo)
+      .slice(0, 5)
+      .map(entry => ({
+        id: entry.symptom_type_id,
+        name: entry.symptom_type_id.toString(), // Idéalement, on récupérerait le nom depuis symptom_types
+        intensity: entry.intensity
+      }));
+  };
   
   const dailyStreak = 7;
   const badgesCount = 3;
@@ -251,6 +283,21 @@ const Index = () => {
             )}
           </section>
 
+          <section>
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-lg font-semibold">Symptômes récents</h2>
+              <Button 
+                variant="ghost" 
+                onClick={() => setShowSymptomsSummary(!showSymptomsSummary)} 
+                className="text-intestitrack-blue"
+              >
+                {showSymptomsSummary ? "Masquer" : "Afficher"}
+              </Button>
+            </div>
+            
+            {showSymptomsSummary && <SymptomSummary symptoms={getRecentSymptoms()} />}
+          </section>
+
           <section className="grid grid-cols-3 gap-3">
             <Card className="bg-intestitrack-blue-light border-none">
               <CardContent className="p-3 flex flex-col items-center">
@@ -278,6 +325,11 @@ const Index = () => {
               </CardContent>
             </Card>
           </section>
+          
+          <HealthSuggestion 
+            type={suggestionType} 
+            bristolType={lastEntry.type}
+          />
 
           <Card>
             <CardHeader className="pb-2">
@@ -310,11 +362,22 @@ const Index = () => {
             </section>
           )}
 
-          <RecommendationCard 
-            title="Restez hydraté" 
-            description="N'oubliez pas de bien vous hydrater, surtout en cas de selles molles ou liquides."
-            icon={<Droplets className="h-5 w-5" />}
-          />
+          <Card className="bg-intestitrack-green-light border-none">
+            <CardContent className="p-4">
+              <div className="flex items-start">
+                <div className="bg-white rounded-full p-2 mr-3">
+                  <AlertTriangle className="h-5 w-5 text-intestitrack-alert" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-base">Rappel important</h3>
+                  <p className="text-sm text-muted-foreground">
+                    L'intelligence artificielle ne peut pas se substituer à l'avis d'un médecin. 
+                    Consultez un professionnel de santé pour tout problème médical.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <section>
             <div className="flex justify-between items-center mb-3">
