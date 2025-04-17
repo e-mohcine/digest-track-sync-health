@@ -5,6 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Droplet, AlertTriangle, Plus } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface TypeSelectorProps {
   selectedType: number | null;
@@ -15,6 +16,7 @@ interface TypeSelectorProps {
   onMucusToggle: (value: boolean) => void;
   selectedQuantity: string | null;
   onQuantitySelect: (quantity: string) => void;
+  onQuickAdd?: (bristolType: number, quantity: string) => void;
 }
 
 export const TypeSelector: React.FC<TypeSelectorProps> = ({ 
@@ -25,11 +27,55 @@ export const TypeSelector: React.FC<TypeSelectorProps> = ({
   onBloodToggle,
   onMucusToggle,
   selectedQuantity,
-  onQuantitySelect
+  onQuantitySelect,
+  onQuickAdd
 }) => {
+  const handleQuickAdd = (bristolType: number, quantity: string) => {
+    if (onQuickAdd) {
+      onQuickAdd(bristolType, quantity);
+    }
+  };
+
   return (
     <div>
       <h2 className="text-lg font-medium mb-3">Sélectionnez le type selon l'échelle de Bristol</h2>
+      
+      {/* Quick Add Cards - Ajout Rapide */}
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        <Card 
+          className="cursor-pointer hover:bg-blue-50 transition-colors"
+          onClick={() => handleQuickAdd(4, 'normal')}
+        >
+          <CardContent className="p-3 flex flex-col items-center">
+            <BristolType type={4} size="sm" />
+            <span className="text-xs mt-1 font-medium">Type 4 - Normal</span>
+            <span className="text-xs mt-1 text-muted-foreground">Ajout rapide</span>
+          </CardContent>
+        </Card>
+        
+        <Card 
+          className="cursor-pointer hover:bg-blue-50 transition-colors"
+          onClick={() => handleQuickAdd(3, 'normal')}
+        >
+          <CardContent className="p-3 flex flex-col items-center">
+            <BristolType type={3} size="sm" />
+            <span className="text-xs mt-1 font-medium">Type 3 - Normal</span>
+            <span className="text-xs mt-1 text-muted-foreground">Ajout rapide</span>
+          </CardContent>
+        </Card>
+        
+        <Card 
+          className="cursor-pointer hover:bg-blue-50 transition-colors"
+          onClick={() => handleQuickAdd(5, 'normal')}
+        >
+          <CardContent className="p-3 flex flex-col items-center">
+            <BristolType type={5} size="sm" />
+            <span className="text-xs mt-1 font-medium">Type 5 - Mou</span>
+            <span className="text-xs mt-1 text-muted-foreground">Ajout rapide</span>
+          </CardContent>
+        </Card>
+      </div>
+      
       <ScrollArea className="h-[450px] rounded-md border p-4">
         <div className="grid grid-cols-1 gap-4 mb-4">
           {[1, 2, 3, 4, 5, 6, 7].map(type => (

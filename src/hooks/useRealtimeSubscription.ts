@@ -1,16 +1,21 @@
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { subscribeToRealtimeChanges, RealtimeSubscriptionConfig } from '@/services/realtimeService';
 
 export const useRealtimeSubscription = (config: RealtimeSubscriptionConfig) => {
+  // Utiliser useRef pour stocker la configuration et éviter les re-abonnements inutiles
+  const configRef = useRef(config);
+  
   useEffect(() => {
+    // Mettre à jour la référence si la configuration change
+    configRef.current = config;
+    
     // S'abonner aux changements
-    const unsubscribe = subscribeToRealtimeChanges(config);
+    const unsubscribe = subscribeToRealtimeChanges(configRef.current);
     
     // Se désabonner lors du démontage
     return () => {
       unsubscribe();
     };
-  // Since config is an object, we need to extract the values we want to depend on
-  }, [config.table, config.event]);
+  }, [config.table, config.event, config.callback]);
 };

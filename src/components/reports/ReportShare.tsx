@@ -18,7 +18,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
-export const ReportShare = () => {
+interface ReportShareProps {
+  onOpenChange?: (open: boolean) => void;
+  timeRange?: 'week' | 'month' | 'year';
+}
+
+export const ReportShare: React.FC<ReportShareProps> = ({ 
+  onOpenChange,
+  timeRange = 'week'
+}) => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const generatePDF = async () => {

@@ -408,7 +408,6 @@ const Stats = () => {
       </Tabs>
 
       <ReportShare 
-        open={showShareDialog} 
         onOpenChange={setShowShareDialog} 
         timeRange={timeRange as 'week' | 'month' | 'year'} 
       />

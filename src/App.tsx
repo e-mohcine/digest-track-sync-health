@@ -11,6 +11,7 @@ import History from "./pages/History";
 import Stats from "./pages/Stats";
 import Rewards from "./pages/Rewards";
 import Profile from "./pages/Profile";
+import Chat from "./pages/Chat";
 import FAQ from "./pages/FAQ";
 import RGPD from "./pages/RGPD";
 import Auth from "./pages/Auth";
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/add" element={<AddEntry />} />
             <Route path="/history" element={<History />} />
             <Route path="/stats" element={<Stats />} />
+            <Route path="/chat" element={<Chat />} />
             <Route path="/rewards" element={<Rewards />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/faq" element={<FAQ />} />

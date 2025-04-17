@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, Menu, User } from 'lucide-react';
+import { LogOut, Menu, User, MessageSquare } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { signOut } from '@/services/supabaseService';
@@ -39,6 +39,16 @@ export const NavBar = () => {
         </Link>
         
         <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => navigate('/chat')}
+            className="relative"
+            title="Assistant IA"
+          >
+            <MessageSquare className="h-5 w-5" />
+          </Button>
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -104,6 +114,12 @@ export const NavBar = () => {
                   className="block px-4 py-2 text-lg font-medium hover:bg-muted rounded-md"
                 >
                   Statistiques
+                </Link>
+                <Link
+                  to="/chat"
+                  className="block px-4 py-2 text-lg font-medium hover:bg-muted rounded-md"
+                >
+                  Assistant IA
                 </Link>
                 <Link
                   to="/rewards"

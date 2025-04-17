@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -55,7 +54,6 @@ const Index = () => {
   }, []);
   
   useEffect(() => {
-    // Sélectionner un type de suggestion aléatoire chaque jour
     const suggestionTypes: Array<'hydration' | 'nutrition' | 'stress' | 'sleep'> = [
       'hydration', 'nutrition', 'stress', 'sleep'
     ];
@@ -151,7 +149,7 @@ const Index = () => {
         mood_level: moodData.moodLevel,
         stress_level: moodData.stressLevel,
         sleep_quality: moodData.sleepQuality,
-        notes: null, // Ajout de la propriété manquante 'notes'
+        notes: null,
         occurred_at: new Date().toISOString()
       });
       
@@ -166,21 +164,18 @@ const Index = () => {
     }
   };
 
-  // Extraire les symptômes pour la vue sommaire
   const getRecentSymptoms = () => {
     if (symptomEntries.length === 0) return [];
     
-    // Calculer la date d'il y a 24h
     const oneDayAgo = new Date();
     oneDayAgo.setDate(oneDayAgo.getDate() - 1);
     
-    // Filtrer les entrées des dernières 24h
     return symptomEntries
       .filter(entry => new Date(entry.occurred_at) >= oneDayAgo)
       .slice(0, 5)
       .map(entry => ({
         id: entry.symptom_type_id,
-        name: entry.symptom_type_id.toString(), // Idéalement, on récupérerait le nom depuis symptom_types
+        name: entry.symptom_type_id.toString(),
         intensity: entry.intensity
       }));
   };

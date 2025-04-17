@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { CircleUser, Home, BarChart, Clock, Award } from 'lucide-react';
+import { CircleUser, Home, BarChart, Clock, Award, MessageSquare } from 'lucide-react';
 
 export const BottomNav = () => {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ export const BottomNav = () => {
     { path: '/', icon: Home, label: 'Accueil' },
     { path: '/history', icon: Clock, label: 'Historique' },
     { path: '/stats', icon: BarChart, label: 'Stats' },
-    { path: '/rewards', icon: Award, label: 'Récompenses' },
+    { path: '/chat', icon: MessageSquare, label: 'Assistant' },
     { path: '/profile', icon: CircleUser, label: 'Profil' },
   ];
   
