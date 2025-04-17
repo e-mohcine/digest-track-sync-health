@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 export interface RealtimeSubscriptionConfig {
   table: string;
@@ -12,21 +13,17 @@ export const subscribeToRealtimeChanges = (config: RealtimeSubscriptionConfig) =
   
   const channelId = `realtime_${table}_${event}_${Date.now()}`;
   
-  // Create subscription with the correct Supabase Realtime API format
+  // Utiliser la syntaxe correcte pour s'abonner aux changements
   const channel = supabase
     .channel(channelId)
-    .on(
-      'postgres_changes',
-      { 
-        event, 
-        schema: 'public', 
-        table 
-      },
-      callback
-    )
+    .on('postgres_changes', {
+      event: event,
+      schema: 'public',
+      table: table
+    }, callback)
     .subscribe();
   
-  // Return an unsubscribe function
+  // Retourner une fonction pour se désabonner
   return () => {
     supabase.removeChannel(channel);
   };
