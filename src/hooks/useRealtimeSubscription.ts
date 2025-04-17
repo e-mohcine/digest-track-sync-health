@@ -3,17 +3,17 @@ import { useEffect, useRef } from 'react';
 import { subscribeToRealtimeChanges, RealtimeSubscriptionConfig } from '@/services/realtimeService';
 
 export const useRealtimeSubscription = (config: RealtimeSubscriptionConfig) => {
-  // Utiliser useRef pour stocker la configuration et éviter les re-abonnements inutiles
+  // Store the configuration in a ref to avoid unnecessary re-subscriptions
   const configRef = useRef(config);
   
   useEffect(() => {
-    // Mettre à jour la référence si la configuration change
+    // Update the reference if config changes
     configRef.current = config;
     
-    // S'abonner aux changements
+    // Subscribe to changes
     const unsubscribe = subscribeToRealtimeChanges(configRef.current);
     
-    // Se désabonner lors du démontage
+    // Unsubscribe when component unmounts
     return () => {
       unsubscribe();
     };
