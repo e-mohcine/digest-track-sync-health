@@ -2,13 +2,17 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '@/types/database.types';
 import { toast } from 'sonner';
+import { useRealtimeSubscription } from '@/hooks/useRealtimeSubscription';
 
 // Fonctions pour le profil utilisateur
 export const fetchUserProfile = async (): Promise<Profile | null> => {
   try {
     const { data: user } = await supabase.auth.getUser();
     
-    if (!user.user) return null;
+    if (!user.user) {
+      toast.error('Utilisateur non authentifié');
+      return null;
+    }
     
     const { data, error } = await supabase
       .from('profiles')
@@ -16,7 +20,12 @@ export const fetchUserProfile = async (): Promise<Profile | null> => {
       .eq('id', user.user.id)
       .single();
       
-    if (error) throw error;
+    if (error) {
+      toast.error('Erreur lors de la récupération du profil', {
+        description: error.message
+      });
+      throw error;
+    }
     
     return data;
   } catch (error: any) {
@@ -29,7 +38,10 @@ export const updateUserProfile = async (profile: Partial<Profile>): Promise<Prof
   try {
     const { data: user } = await supabase.auth.getUser();
     
-    if (!user.user) return null;
+    if (!user.user) {
+      toast.error('Utilisateur non authentifié');
+      return null;
+    }
     
     const { data, error } = await supabase
       .from('profiles')
@@ -38,7 +50,12 @@ export const updateUserProfile = async (profile: Partial<Profile>): Promise<Prof
       .select()
       .single();
       
-    if (error) throw error;
+    if (error) {
+      toast.error('Erreur lors de la mise à jour du profil', {
+        description: error.message
+      });
+      throw error;
+    }
     
     toast.success('Profil mis à jour avec succès');
     return data;
@@ -48,4 +65,17 @@ export const updateUserProfile = async (profile: Partial<Profile>): Promise<Prof
     });
     return null;
   }
+};
+
+// Hook pour écouter les mises à jour du profil en temps réel
+export const useProfileUpdates = (userId: string, callback: (profile: Profile) => void) => {
+  useRealtimeSubscription({
+    table: 'profiles',
+    event: 'UPDATE',
+    callback: (payload) => {
+      if (payload.new && payload.new.id === userId) {
+        callback(payload.new as Profile);
+      }
+    }
+  });
 };
