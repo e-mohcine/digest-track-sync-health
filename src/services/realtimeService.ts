@@ -17,10 +17,10 @@ export const subscribeToRealtimeChanges = (config: RealtimeSubscriptionConfig) =
     .channel(channelId)
     .on(
       'postgres_changes',
-      {
-        event: event,
-        schema: 'public',
-        table: table
+      { 
+        event, 
+        schema: 'public', 
+        table 
       },
       callback
     )

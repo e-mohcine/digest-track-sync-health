@@ -17,5 +17,5 @@ export const useRealtimeSubscription = (config: RealtimeSubscriptionConfig) => {
     return () => {
       unsubscribe();
     };
-  }, [config.table, config.event, config.callback]);
+  }, [config.table, config.event]);  // Remove callback from dependencies to prevent unnecessary resubscriptions
 };
