@@ -16,11 +16,15 @@ export const subscribeToRealtimeChanges = (config: RealtimeSubscriptionConfig) =
   // Utiliser la syntaxe correcte pour s'abonner aux changements
   const channel = supabase
     .channel(channelId)
-    .on('postgres_changes', {
-      event: event,
-      schema: 'public',
-      table: table
-    }, callback)
+    .on(
+      'postgres_changes', 
+      {
+        event: event,
+        schema: 'public',
+        table: table
+      },
+      callback
+    )
     .subscribe();
   
   // Retourner une fonction pour se désabonner
