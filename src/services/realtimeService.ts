@@ -12,22 +12,23 @@ export const subscribeToRealtimeChanges = (config: RealtimeSubscriptionConfig) =
   
   const channelId = `realtime_${table}_${event}_${Date.now()}`;
   
-  // Create subscription with the correct API format
+  // Create subscription with the correct Supabase Realtime API format
   const channel = supabase
     .channel(channelId)
     .on(
-      'postgres_changes', // This is the event source
-      { 
-        event: event, 
-        schema: 'public', 
-        table: table 
-      }, 
+      'postgres_changes', 
+      {
+        event: event,
+        schema: 'public',
+        table: table
+      },
       (payload) => {
         callback(payload);
       }
     )
     .subscribe();
   
+  // Return an unsubscribe function
   return () => {
     supabase.removeChannel(channel);
   };
