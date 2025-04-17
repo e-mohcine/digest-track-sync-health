@@ -13,10 +13,11 @@ export const subscribeToRealtimeChanges = (config: RealtimeSubscriptionConfig): 
   
   const channelId = `realtime_${table}_${event}_${Date.now()}`;
   
+  // Using the correct type assertion to fix the TypeScript error
   const channel = supabase
     .channel(channelId)
     .on(
-      'postgres_changes',
+      'postgres_changes' as any,
       { 
         event, 
         schema: 'public', 
